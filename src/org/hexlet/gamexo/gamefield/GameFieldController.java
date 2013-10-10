@@ -1,0 +1,285 @@
+package org.hexlet.gamexo.gamefield;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hexlet.gamexo.utils.Logger;
+
+/**
+ * @author Andrew2212
+ * 
+ */
+public class GameFieldController {
+
+	private String stringWinnerX = "";
+	private String stringWinnerO = "";
+	private int countSteps = 0;
+	private int fieldSize;
+	private int numCheckedSigns;
+	private boolean isGameOver = false;
+	private List<int[]> listCellWin;// List of cells for drawing lineWin
+
+	public GameFieldController(int cellNum, int numCheckedSigns) {
+
+		this.fieldSize = cellNum;
+		this.numCheckedSigns = numCheckedSigns;
+
+		// Instantiation array 'listCellWin'
+		listCellWin = new ArrayList<int[]>();
+
+		// Get String for the comparison
+		createStringWinnerX();
+		createStringWinnerO();
+
+		Logger.v("fieldSize = " + this.fieldSize + ", numCheckedSigns = "
+				+ this.numCheckedSigns);
+	}
+
+	public boolean checkGameOver(int cellNumeroX, int cellNumeroY) {
+
+		Logger.v();
+		// 'playerSign' — it's sign that will be set into the cell
+		String playerSign = String.valueOf(GameField.getSignForNextMove());
+
+		if (isRowOrColumnCompleted(cellNumeroX, cellNumeroY, playerSign)
+				|| isDiagonalCompleted(cellNumeroX, cellNumeroY, playerSign)) {
+
+			Logger.v("Gamer ***" + playerSign + "*** is Winner!");
+
+			countSteps = 0;
+			isGameOver = true;
+
+			for (int[] cell : listCellWin) {
+				Logger.v("Cell coordinate = " + cell[0] + ", " + cell[1]);
+			}
+
+			return isGameOver;
+		}
+
+		if (isGameFieldFilled()) {
+			countSteps = 0;
+			isGameOver = true;
+			return isGameOver;
+		}
+
+		return isGameOver;
+	}
+
+	// --------Getters and Setters-----------------
+
+	/**
+	 * @return current game status
+	 */
+	public boolean getIsGameOver() {
+		return isGameOver;
+	}
+
+	/**
+	 * @return List of the win cells for the marking into GameView
+	 */
+	public List<int[]> getListCellWin() {
+		return listCellWin;
+	}
+
+	// ----------------Private Methods------------------
+
+	private boolean isGameFieldFilled() {
+
+		if (countSteps == (fieldSize * fieldSize - 1)) {
+			return true;
+		}
+		countSteps++;
+		return false;
+	}
+
+	private boolean isRowOrColumnCompleted(int cellNumeroX, int cellNumeroY,
+			String playerSign) {
+		Logger.v();
+		return (checkToWinColumns(cellNumeroX, cellNumeroY, playerSign) || checkToWinRows(
+				cellNumeroX, cellNumeroY, playerSign));
+	}
+
+	private boolean isDiagonalCompleted(int cellNumeroX, int cellNumeroY,
+			String playerSign) {
+		Logger.v();
+		return (checkToWinDiagonalCW(cellNumeroX, cellNumeroY, playerSign) || checkToWinDiagonalCCW(
+				cellNumeroX, cellNumeroY, playerSign));
+	}
+
+	/**
+	 * @param cellNumeroX
+	 * @param cellNumeroY
+	 * @param playerSign
+	 * @return true if column contains 'stringWinner' , false if it don't
+	 */
+	private boolean checkToWinColumns(int cellNumeroX, int cellNumeroY,
+			String playerSign) {
+		Logger.v();
+		String stringCol = playerSign;
+		listCellWin.add(new int[] { cellNumeroX, cellNumeroY });
+
+		for (int i = 1; i < numCheckedSigns; i++) {
+			stringCol += fetchCellValueToWin(cellNumeroX, cellNumeroY + i,
+					playerSign);
+			stringCol = fetchCellValueToWin(cellNumeroX, cellNumeroY - i,
+					playerSign) + stringCol;
+		}
+
+		if (stringCol.contains(stringWinnerX)
+				|| stringCol.contains(stringWinnerO)) {
+			Logger.v("listCellWin.size() = " + listCellWin.size());
+			return true;
+		} else {
+			listCellWin.clear();
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param cellNumeroX
+	 * @param cellNumeroY
+	 * @param playerSign
+	 * @return true if row contains 'stringWinner' , false if it don't
+	 */
+	private boolean checkToWinRows(int cellNumeroX, int cellNumeroY,
+			String playerSign) {
+		Logger.v();
+		String stringRow = playerSign;
+		listCellWin.add(new int[] { cellNumeroX, cellNumeroY });
+
+		for (int i = 1; i < numCheckedSigns; i++) {
+			stringRow += fetchCellValueToWin(cellNumeroX + i, cellNumeroY,
+					playerSign);
+			stringRow = fetchCellValueToWin(cellNumeroX - i, cellNumeroY,
+					playerSign) + stringRow;
+		}
+
+		if (stringRow.contains(stringWinnerX)
+				|| stringRow.contains(stringWinnerO)) {
+			return true;
+		} else {
+			listCellWin.clear();
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param cellNumeroX
+	 * @param cellNumeroY
+	 * @param playerSign
+	 * @return true if diagonalCW contains 'stringWinner' , false if it don't
+	 */
+	private boolean checkToWinDiagonalCW(int cellNumeroX, int cellNumeroY,
+			String playerSign) {
+		Logger.v();
+		String stringDiagonalCW = playerSign;
+		listCellWin.add(new int[] { cellNumeroX, cellNumeroY });
+
+		for (int i = 1; i < numCheckedSigns; i++) {
+			stringDiagonalCW += fetchCellValueToWin(cellNumeroX + i,
+					cellNumeroY - i, playerSign);
+			stringDiagonalCW = fetchCellValueToWin(cellNumeroX - i, cellNumeroY
+					+ i, playerSign)
+					+ stringDiagonalCW;
+		}
+
+		if (stringDiagonalCW.contains(stringWinnerX)
+				|| stringDiagonalCW.contains(stringWinnerO)) {
+			return true;
+		} else {
+			listCellWin.clear();
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param cellNumeroX
+	 * @param cellNumeroY
+	 * @param playerSign
+	 * @return true if diagonalCCW contains 'stringWinner' , false if it don't
+	 */
+	private boolean checkToWinDiagonalCCW(int cellNumeroX, int cellNumeroY,
+			String playerSign) {
+		Logger.v();
+		String stringDiagonalCCW = playerSign;
+		listCellWin.add(new int[] { cellNumeroX, cellNumeroY });
+
+		for (int i = 1; i < numCheckedSigns; i++) {
+			stringDiagonalCCW += fetchCellValueToWin(cellNumeroX + i,
+					cellNumeroY + i, playerSign);
+			stringDiagonalCCW = fetchCellValueToWin(cellNumeroX - i,
+					cellNumeroY - i, playerSign) + stringDiagonalCCW;
+		}
+
+		if (stringDiagonalCCW.contains(stringWinnerX)
+				|| stringDiagonalCCW.contains(stringWinnerO)) {
+			return true;
+		} else {
+			listCellWin.clear();
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param cellNumeroX
+	 * @param cellNumeroY
+	 * @return cellValue from GameField::gameFieldMatrix[][]</br> It gets
+	 *         cellValue and adds cell coordinate to the 'listCellWin' if it
+	 *         equals 'playerSign'
+	 */
+	private String fetchCellValueToWin(int cellNumeroX, int cellNumeroY,
+			String playerSign) {
+
+		String cellValue = fetchCellValue(cellNumeroX, cellNumeroY);
+
+		// Logger.v("playerSign = " + playerSign);
+		// Logger.v("cellValue = " + cellValue);
+
+		if (cellValue.equalsIgnoreCase(playerSign)) {
+			listCellWin.add(new int[] { cellNumeroX, cellNumeroY });
+		}
+
+		return cellValue;
+	}
+
+	/**
+	 * @param cellNumeroX
+	 * @param cellNumeroY
+	 * @return cellValue from GameField::gameFieldMatrix[][]</br> It just gets
+	 *         cell value
+	 */
+	private String fetchCellValue(int cellNumeroX, int cellNumeroY) {
+
+		String cellValue = "";
+		if (0 <= cellNumeroX && cellNumeroX < fieldSize) {
+			if (0 <= cellNumeroY && cellNumeroY < fieldSize) {
+
+				cellValue += GameField.getFieldMatrix()[cellNumeroX][cellNumeroY];
+			}
+		}
+		return cellValue;
+	}
+
+	private String createStringWinnerX() {
+		for (int i = 0; i < numCheckedSigns; i++) {
+			stringWinnerX += GameField.VALUE_X;
+		}
+
+		Logger.v(stringWinnerX);
+		return stringWinnerX;
+	}
+
+	private String createStringWinnerO() {
+		for (int i = 0; i < numCheckedSigns; i++) {
+			stringWinnerO += GameField.VALUE_O;
+		}
+
+		Logger.v(stringWinnerO);
+		return stringWinnerO;
+	}
+
+}

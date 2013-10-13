@@ -60,6 +60,7 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 	private static IPlayer playerUser;
 	private static IPlayer playerEnemy;
 	private static IPlayer currentPlayer;
+	private static char signPlayerUser;//Set value into 'setPrefsValue()'
 
 	// private enum CurrentPlayerEnum {
 	// USER, ENEMY;
@@ -284,6 +285,12 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 
 	}
 
+	// -----------Getters and Setters--------------------
+
+	public static char getSignPlayerUser() {
+		return signPlayerUser;
+	}
+
 	// -------Private Methods----------------------
 
 	private static void showResultOfCompetition(String winnerName) {
@@ -403,6 +410,9 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 	 * SOMEWHERE
 	 */
 	private void setPrefsValue() {
+
+		// set value by hardCode yet. Get from Preferences soon
+		signPlayerUser = GameField.VALUE_X;
 
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);

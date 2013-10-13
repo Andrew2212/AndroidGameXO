@@ -14,8 +14,10 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 	private static int[] position = new int[2];
 	private IBrainAI<?> iBrainAI;
 	private WayEnum wayEnum;
+	private char signPlayer;
 
-	public PlayerBot(int fieldSize, int numChecked) {
+	public PlayerBot(int fieldSize, int numChecked, char signPlayer) {
+		this.signPlayer = signPlayer;
 		wayEnum = Game.getWayEnum();
 
 		switch (wayEnum) {
@@ -55,7 +57,8 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 		do {
 			position = getCoordinate(iBrainAI,
 					(T[][]) GameField.getFieldMatrix(),
-					((T) (Character) GameField.getSignForNextMove()));
+					// ((T) (Character) GameField.getSignForNextMove()));
+					((T) (Character) signPlayer));
 		} while (GameField.getFieldMatrix()[position[X]][position[Y]] != GameField.VALUE_DEFAULT);
 
 		return position;
@@ -71,9 +74,13 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 	}
 
 	@Override
-	public void setMove(int cellX, int cellY) {
+	public void setMove(int cellX, int cellY, char signPlayer) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public char getSignPlayer() {
+		return signPlayer;
 	}
 
 }

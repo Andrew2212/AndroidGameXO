@@ -41,14 +41,16 @@ public class GameField {
 	 *            cell number on the 'Y'
 	 * @return true if sign is set into cell, false if it's not.
 	 */
-	public static boolean setSignToCell(int cellNumeroX, int cellNumeroY) {
+//	public static boolean setSignToCell(int cellNumeroX, int cellNumeroY) {
+	public static boolean setSignToCell(int cellNumeroX, int cellNumeroY, char playerSign) {
 
 		if (!isCellValid(cellNumeroX, cellNumeroY)) {
 			Logger.i("Cell is invalid!");
 			return false;
 		}
 
-		Character sign = chooseSignForNextMove();
+//		Character sign = chooseSignForNextMove();
+		Character sign = playerSign;
 		fieldMatrix[cellNumeroX][cellNumeroY] = sign;
 
 		return true;
@@ -60,10 +62,10 @@ public class GameField {
 
 	// -------Getters and Setters---------
 
-	public static char getSignForNextMove() {
-		System.out.println("getSignForNextMove() = " + signForNextMove);
-		return signForNextMove;
-	}
+//	public static char getSignForNextMove() {
+//		System.out.println("getSignForNextMove() = " + signForNextMove);
+//		return signForNextMove;
+//	}
 
 	public static Character[][] getFieldMatrix() {
 		int size = fieldMatrix.length;

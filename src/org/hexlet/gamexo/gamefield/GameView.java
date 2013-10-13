@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hexlet.gamexo.GameActivity;
 import org.hexlet.gamexo.R;
+import org.hexlet.gamexo.gamefield.players.IPlayer;
 import org.hexlet.gamexo.utils.Logger;
 import org.hexlet.gamexo.utils.Sounder;
 import org.hexlet.gamexo.utils.Toaster;
@@ -252,12 +253,13 @@ public class GameView extends View {
 					+ ", resultOnTouch[Y] = " + resultOnTouch[Y]);
 
 			// ***********************************************************************
-
-			int[] move = GameActivity.getCurrentPlayer().doMove();
+			IPlayer currentPlayer = GameActivity.getCurrentPlayer();
+			int[] move = currentPlayer.doMove();
+			char signPlayer = currentPlayer.getSignPlayer();
 
 			// ***********************************************************************
 			// Set value into fieldMatrix
-			if (GameField.setSignToCell(move[X], move[Y])) {
+			if (GameField.setSignToCell(move[X], move[Y], signPlayer)) {
 
 				if (gameFieldController.checkGameOver(move[X], move[Y])) {
 					Toaster.doToastShort(context, "GameOver!");

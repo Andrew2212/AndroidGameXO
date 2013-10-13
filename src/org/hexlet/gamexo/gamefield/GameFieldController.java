@@ -3,6 +3,7 @@ package org.hexlet.gamexo.gamefield;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hexlet.gamexo.GameActivity;
 import org.hexlet.gamexo.utils.Logger;
 
 /**
@@ -41,7 +42,8 @@ public class GameFieldController {
 //		Logger.v();
 		
 		// 'playerSign' — it's sign that will be set into the cell
-		String playerSign = String.valueOf(GameField.getSignForNextMove());
+//		String playerSign = String.valueOf(GameField.getSignForNextMove());
+		String playerSign = String.valueOf(GameActivity.getCurrentPlayer().getSignPlayer());
 
 		if (isRowOrColumnCompleted(cellNumeroX, cellNumeroY, playerSign)
 				|| isDiagonalCompleted(cellNumeroX, cellNumeroY, playerSign)) {

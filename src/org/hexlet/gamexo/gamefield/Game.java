@@ -1,5 +1,6 @@
 package org.hexlet.gamexo.gamefield;
 
+import org.hexlet.gamexo.GameActivity;
 import org.hexlet.gamexo.ai.WayEnum;
 import org.hexlet.gamexo.gamefield.players.IPlayer;
 import org.hexlet.gamexo.gamefield.players.PlayerHumanLocal;
@@ -17,6 +18,9 @@ public class Game {
 
 	private IPlayer playerUser;
 	private IPlayer playerEnemy;
+	
+	private char signPlayerUser;
+	private char signPlayerEnemy;
 
 	public Game(EnumEnemy enumEmemy, WayEnum wayEnum) {
 
@@ -39,25 +43,34 @@ public class Game {
 				numCheckedSigns);
 
 		// Create playerUser (local human)
-		playerUser = new PlayerHumanLocal();
+		signPlayerUser = GameActivity.getSignPlayerUser();
+		playerUser = new PlayerHumanLocal(signPlayerUser);
 
 		// Create playerEnemy
-		chooseAndInitEnemy();
+		signPlayerEnemy = specifySignPlayerEnemy(signPlayerUser);
+		chooseAndInitEnemy(signPlayerEnemy);
 	}
 
 	public GameFieldController getGameFieldController() {
 		return gameFieldController;
 	}
+	
+	private char specifySignPlayerEnemy(char signPlayerUser){
+		if(signPlayerUser == GameField.VALUE_X){
+			return GameField.VALUE_O;
+		}
+		return GameField.VALUE_X;
+	}
 
-	private <T> void chooseAndInitEnemy() {
+	private <T> void chooseAndInitEnemy(char signPlayerEnemy) {
 
 		switch (enumEmemy) {
 		case HUMAN:
-			playerEnemy = new PlayerHumanLocal();
+			playerEnemy = new PlayerHumanLocal(signPlayerEnemy);
 			break;
 
 		case BOT:
-			playerEnemy = new PlayerBot<T>(fieldSize, numCheckedSigns);
+			playerEnemy = new PlayerBot<T>(fieldSize, numCheckedSigns, signPlayerEnemy);
 			break;
 
 		case REMOTE:

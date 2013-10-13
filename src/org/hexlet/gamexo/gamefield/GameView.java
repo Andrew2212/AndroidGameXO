@@ -246,7 +246,6 @@ public class GameView extends View {
 			int cellY = (int) Math.floor(y / cellSizeDip);
 
 			// It's that will returned by HumanLocalPlayer method 'doMove()'
-			// resultOnTouch = new int[] { cellX, cellY };
 			resultOnTouch[X] = cellX;
 			resultOnTouch[Y] = cellY;
 			Logger.v("resultOnTouch[X] = " + resultOnTouch[X]
@@ -259,7 +258,7 @@ public class GameView extends View {
 
 			// ***********************************************************************
 			// Set value into fieldMatrix
-			if (GameField.setSignToCell(move[X], move[Y], signPlayer)) {
+			if (currentPlayer.setMove(move[X], move[Y], signPlayer)) {
 
 				if (gameFieldController.checkGameOver(move[X], move[Y])) {
 					Toaster.doToastShort(context, "GameOver!");

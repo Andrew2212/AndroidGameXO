@@ -42,7 +42,6 @@ public class GameFieldController {
 //		Logger.v();
 		
 		// 'playerSign' — it's sign that will be set into the cell
-//		String playerSign = String.valueOf(GameField.getSignForNextMove());
 		String playerSign = String.valueOf(GameActivity.getCurrentPlayer().getSignPlayer());
 
 		if (isRowOrColumnCompleted(cellNumeroX, cellNumeroY, playerSign)

@@ -57,7 +57,6 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 		do {
 			position = getCoordinate(iBrainAI,
 					(T[][]) GameField.getFieldMatrix(),
-					// ((T) (Character) GameField.getSignForNextMove()));
 					((T) (Character) signPlayer));
 		} while (GameField.getFieldMatrix()[position[X]][position[Y]] != GameField.VALUE_DEFAULT);
 
@@ -74,9 +73,8 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 	}
 
 	@Override
-	public void setMove(int cellX, int cellY, char signPlayer) {
-		// TODO Auto-generated method stub
-
+	public boolean setMove(int cellX, int cellY, char signPlayer) {
+		return GameField.setSignToCell(cellX, cellY, signPlayer);
 	}
 
 	public char getSignPlayer() {

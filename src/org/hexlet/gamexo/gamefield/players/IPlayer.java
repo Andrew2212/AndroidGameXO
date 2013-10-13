@@ -14,8 +14,9 @@ public interface IPlayer {
 	 * @param cellY
 	 *            move coordinate 'Y' <br>
 	 *            Set move into the 'fieldMatrix'
+	 * @return GameField.setSignToCell(cellX, cellY, signPlayer)
 	 */
-	void setMove(int cellX, int cellY, char signPlayer);
-	
+	boolean setMove(int cellX, int cellY, char signPlayer);
+
 	char getSignPlayer();
 }

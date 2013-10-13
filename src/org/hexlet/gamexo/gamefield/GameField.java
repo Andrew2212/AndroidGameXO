@@ -12,15 +12,8 @@ public class GameField {
 	public static final char VALUE_O = 'O';
 	public static final char VALUE_DEFAULT = '_';
 
-	private static final int FLAG_X = 1;
-//	private static final int FLAG_O = -FLAG_X;
-	private static int flagSign = FLAG_X;// Exchange sign 'X' and 'Y'
-	private static Character signForNextMove = VALUE_X;
-
 	private static int fieldSize;//
 	private static Character[][] fieldMatrix;
-
-//	private static boolean gameFieldInit = false;
 
 	public static void initNewFieldMatrix(int fieldSize) {
 
@@ -29,10 +22,7 @@ public class GameField {
 		GameField.fieldSize = fieldSize;
 		fieldMatrix = new Character[fieldSize][fieldSize];
 		fillDefaultGameMatrix();
-		flagSign = FLAG_X;
-
 	}
-	
 
 	/**
 	 * @param cellNumeroX
@@ -41,31 +31,21 @@ public class GameField {
 	 *            cell number on the 'Y'
 	 * @return true if sign is set into cell, false if it's not.
 	 */
-//	public static boolean setSignToCell(int cellNumeroX, int cellNumeroY) {
-	public static boolean setSignToCell(int cellNumeroX, int cellNumeroY, char playerSign) {
+	public static boolean setSignToCell(int cellNumeroX, int cellNumeroY,
+			char playerSign) {
 
 		if (!isCellValid(cellNumeroX, cellNumeroY)) {
 			Logger.i("Cell is invalid!");
 			return false;
 		}
 
-//		Character sign = chooseSignForNextMove();
 		Character sign = playerSign;
 		fieldMatrix[cellNumeroX][cellNumeroY] = sign;
 
 		return true;
 	}
 
-	public static void reverseFlagSign() {
-		flagSign = -flagSign;
-	}
-
 	// -------Getters and Setters---------
-
-//	public static char getSignForNextMove() {
-//		System.out.println("getSignForNextMove() = " + signForNextMove);
-//		return signForNextMove;
-//	}
 
 	public static Character[][] getFieldMatrix() {
 		int size = fieldMatrix.length;
@@ -114,16 +94,5 @@ public class GameField {
 			return true;
 		}
 		return false;
-	}
-
-	private static Character chooseSignForNextMove() {
-
-		if (0 < flagSign) {
-			signForNextMove = VALUE_X;
-		} else {
-			signForNextMove = VALUE_O;
-		}
-		reverseFlagSign();
-		return signForNextMove;
 	}
 }

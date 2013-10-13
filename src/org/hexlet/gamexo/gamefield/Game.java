@@ -3,9 +3,8 @@ package org.hexlet.gamexo.gamefield;
 import org.hexlet.gamexo.GameActivity;
 import org.hexlet.gamexo.ai.WayEnum;
 import org.hexlet.gamexo.gamefield.players.IPlayer;
-import org.hexlet.gamexo.gamefield.players.PlayerHumanLocal;
 import org.hexlet.gamexo.gamefield.players.PlayerBot;
-import org.hexlet.gamexo.utils.Logger;
+import org.hexlet.gamexo.gamefield.players.PlayerHumanLocal;
 
 public class Game {
 

@@ -3,7 +3,7 @@ package org.hexlet.gamexo.gamefield;
 import org.hexlet.gamexo.utils.Logger;
 
 /**
- * @author Andrew2212 
+ * @author Andrew2212
  * 
  */
 public class GameField {
@@ -12,28 +12,33 @@ public class GameField {
 	public static final char VALUE_O = 'O';
 	public static final char VALUE_DEFAULT = '_';
 
-	private static final int FLAG_DEFAULT = 1;
-	private static int flagSign = FLAG_DEFAULT;// Exchange sign 'X' and 'Y'
-	private static char signForNextMove = VALUE_X;
+	private static final int FLAG_X = 1;
+//	private static final int FLAG_O = -FLAG_X;
+	private static int flagSign = FLAG_X;// Exchange sign 'X' and 'Y'
+	private static Character signForNextMove = VALUE_X;
 
-	private static int FIELD_SIZE;// 
-	private static char[][] fieldMatrix;
+	private static int fieldSize;//
+	private static Character[][] fieldMatrix;
 
-	public static void initNewFieldMatrix(int cellNum) {
-		FIELD_SIZE = cellNum;
-		fieldMatrix = new char[cellNum][cellNum];
+//	private static boolean gameFieldInit = false;
+
+	public static void initNewFieldMatrix(int fieldSize) {
+
+		Logger.v("GameField::initNewFieldMatrix()::fieldSize = " + fieldSize);
+
+		GameField.fieldSize = fieldSize;
+		fieldMatrix = new Character[fieldSize][fieldSize];
 		fillDefaultGameMatrix();
-		flagSign = FLAG_DEFAULT;
-	}
+		flagSign = FLAG_X;
 
-	public static void resetGameFieldMatrix() {
-		fillDefaultGameMatrix();
-		flagSign = FLAG_DEFAULT;
 	}
+	
 
 	/**
-	 * @param cellNumeroX cell number on the 'X' 
-	 * @param cellNumeroY cell number on the 'Y'  
+	 * @param cellNumeroX
+	 *            cell number on the 'X'
+	 * @param cellNumeroY
+	 *            cell number on the 'Y'
 	 * @return true if sign is set into cell, false if it's not.
 	 */
 	public static boolean setSignToCell(int cellNumeroX, int cellNumeroY) {
@@ -43,7 +48,7 @@ public class GameField {
 			return false;
 		}
 
-		char sign = chooseSignForNextMove();
+		Character sign = chooseSignForNextMove();
 		fieldMatrix[cellNumeroX][cellNumeroY] = sign;
 
 		return true;
@@ -56,23 +61,30 @@ public class GameField {
 	// -------Getters and Setters---------
 
 	public static char getSignForNextMove() {
+		System.out.println("getSignForNextMove() = " + signForNextMove);
 		return signForNextMove;
 	}
 
-	public static char[][] getFieldMatrix() {
-		return fieldMatrix;
+	public static Character[][] getFieldMatrix() {
+		int size = fieldMatrix.length;
+		Character[][] fieldMatrixCopy = new Character[size][size];
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				fieldMatrixCopy[i][j] = fieldMatrix[i][j];
+			}
+		}
+		return fieldMatrixCopy;
 	}
 
-	public static char getCellValue(int cellNumeroX, int cellNumeroY) {
+	public static Character getCellValue(int cellNumeroX, int cellNumeroY) {
 		return fieldMatrix[cellNumeroX][cellNumeroY];
 	}
-	
 
 	// ---------Private Methods---------------------
 
 	private static void fillDefaultGameMatrix() {
-		for (int i = 0; i < FIELD_SIZE; i++) {
-			for (int j = 0; j < FIELD_SIZE; j++) {
+		for (int i = 0; i < fieldSize; i++) {
+			for (int j = 0; j < fieldSize; j++) {
 				fillDefaultCurrentCell(i, j);
 			}
 		}
@@ -88,7 +100,7 @@ public class GameField {
 			return false;
 		}
 
-		if (fieldMatrix[x][y] == VALUE_DEFAULT) {
+		if (fieldMatrix[x][y].equals(VALUE_DEFAULT)) {
 			return true;
 		}
 		return false;
@@ -96,13 +108,13 @@ public class GameField {
 
 	private static boolean isValueValid(int x, int y) {
 
-		if ((0 <= x && x < FIELD_SIZE) && (0 <= y && y < FIELD_SIZE)) {
+		if ((0 <= x && x < fieldSize) && (0 <= y && y < fieldSize)) {
 			return true;
 		}
 		return false;
 	}
 
-	private static char chooseSignForNextMove() {
+	private static Character chooseSignForNextMove() {
 
 		if (0 < flagSign) {
 			signForNextMove = VALUE_X;

@@ -13,15 +13,16 @@ public class GameFieldController {
 
 	private String stringWinnerX = "";
 	private String stringWinnerO = "";
+	private Character signWIn = GameField.VALUE_DEFAULT;
 	private int countSteps = 0;
 	private int fieldSize;
 	private int numCheckedSigns;
 	private boolean isGameOver = false;
 	private List<int[]> listCellWin;// List of cells for drawing lineWin
 
-	public GameFieldController(int cellNum, int numCheckedSigns) {
+	public GameFieldController(int fieldSize, int numCheckedSigns) {
 
-		this.fieldSize = cellNum;
+		this.fieldSize = fieldSize;
 		this.numCheckedSigns = numCheckedSigns;
 
 		// Instantiation array 'listCellWin'
@@ -31,27 +32,29 @@ public class GameFieldController {
 		createStringWinnerX();
 		createStringWinnerO();
 
-		Logger.v("fieldSize = " + this.fieldSize + ", numCheckedSigns = "
-				+ this.numCheckedSigns);
+//		Logger.v("fieldSize = " + this.fieldSize + ", numCheckedSigns = "
+//				+ this.numCheckedSigns);
 	}
 
 	public boolean checkGameOver(int cellNumeroX, int cellNumeroY) {
 
-		Logger.v();
+//		Logger.v();
+		
 		// 'playerSign' — it's sign that will be set into the cell
 		String playerSign = String.valueOf(GameField.getSignForNextMove());
 
 		if (isRowOrColumnCompleted(cellNumeroX, cellNumeroY, playerSign)
 				|| isDiagonalCompleted(cellNumeroX, cellNumeroY, playerSign)) {
 
-			Logger.v("Gamer ***" + playerSign + "*** is Winner!");
+//			Logger.v("Gamer ***" + playerSign + "*** is Winner!");
 
+			signWIn = playerSign.charAt(0);
 			countSteps = 0;
 			isGameOver = true;
 
-			for (int[] cell : listCellWin) {
-				Logger.v("Cell coordinate = " + cell[0] + ", " + cell[1]);
-			}
+//			for (int[] cell : listCellWin) {
+//				Logger.v("Cell coordinate = " + cell[0] + ", " + cell[1]);
+//			}
 
 			return isGameOver;
 		}
@@ -66,6 +69,10 @@ public class GameFieldController {
 	}
 
 	// --------Getters and Setters-----------------
+
+	public Character getSignWin() {
+		return signWIn;
+	}
 
 	/**
 	 * @return current game status
@@ -127,7 +134,7 @@ public class GameFieldController {
 
 		if (stringCol.contains(stringWinnerX)
 				|| stringCol.contains(stringWinnerO)) {
-			Logger.v("listCellWin.size() = " + listCellWin.size());
+//			Logger.v("listCellWin.size() = " + listCellWin.size());
 			return true;
 		} else {
 			listCellWin.clear();
@@ -269,7 +276,7 @@ public class GameFieldController {
 			stringWinnerX += GameField.VALUE_X;
 		}
 
-		Logger.v(stringWinnerX);
+//		Logger.v(stringWinnerX);
 		return stringWinnerX;
 	}
 
@@ -278,7 +285,7 @@ public class GameFieldController {
 			stringWinnerO += GameField.VALUE_O;
 		}
 
-		Logger.v(stringWinnerO);
+//		Logger.v(stringWinnerO);
 		return stringWinnerO;
 	}
 

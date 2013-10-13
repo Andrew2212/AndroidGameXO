@@ -1,26 +1,27 @@
 package org.hexlet.gamexo;
 
+import org.hexlet.gamexo.ai.WayEnum;
 import org.hexlet.gamexo.gamefield.EnumEnemy;
+import org.hexlet.gamexo.gamefield.Game;
+import org.hexlet.gamexo.gamefield.GameField;
 import org.hexlet.gamexo.gamefield.GameView;
-import org.hexlet.gamexo.gamefield.players.Player;
+import org.hexlet.gamexo.gamefield.players.IPlayer;
 import org.hexlet.gamexo.utils.Logger;
 import org.hexlet.gamexo.utils.Sounder;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract.CommonDataKinds.Event;
 import android.support.v4.app.FragmentActivity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
@@ -30,30 +31,67 @@ import android.widget.TextView;
 public class GameActivity extends FragmentActivity implements OnClickListener {
 
 	private static LinearLayout ltRadioGroup;
-	private static LinearLayout ltGameCount;
+	private static LinearLayout ltGameScore;
 	private static LinearLayout ltLevelDifficulty;
 	private static LinearLayout ltConnectoinMode;
+
+	private static RelativeLayout ltInfoGame;
+	private static TextView tvInfo_WinCount;
+	private static TextView tvInfo_FieldSize;
+	private static TextView tvInfo_NumChecked;
+
+	private static RelativeLayout ltGameResult;
+	private static TextView tvGameResult_winnerName;
+
+	private static RelativeLayout ltFieldView;
 
 	private static RadioGroup radioGroup;
 	private static TextView tvUserName;
 	private static TextView tvEnemyName;
-	private static TextView tvUserCount;//Count of the Win
-//	*********************************************************************
-	private static Player player = new Player();
-//	********************************************************************
-	private static TextView tvEnemyCount;//Count of the Win
+	private static TextView tvUserCount;// Count of the Win
+	private static TextView tvEnemyCount;// Count of the Win
+	private static int scoreUser = 0;
+	private static int scoreEnemy = 0;
+
+	private static int numCompetitionWin; // 'winCount' from Preferences
+	private static boolean isCompetitioinOver = false;
+
+	// *********************************************************************
+	private static IPlayer playerUser;
+	private static IPlayer playerEnemy;
+	private static IPlayer currentPlayer;
+
+	// private enum CurrentPlayerEnum {
+	// USER, ENEMY;
+	// }
+
+	// private static CurrentPlayerEnum currentPlayerEnum;
+
+	private static Game game;
+	private static GameView gameView;
+	// ********************************************************************
 	private static TextView tvDifficult;
 	private TextView tvMode;
 
 	private Button btnReset;
+	private Button btnStart;
 
 	private static int countSteps = 0;
 	private static String strDifficult;
 	private static EnumEnemy enemy;
+	private static WayEnum wayEnum;
 
 	private static Context context;
-	
-	private static GameView gameView;
+
+	/**
+	 * If 'infoGameInit()' for info inscription data is called - it's true;
+	 * false otherwise
+	 */
+	public static boolean isInfoGameInit = false;
+	/**
+	 * If button 'Start Game' is pressed - it's true; false otherwise
+	 */
+	public static boolean isGameStart = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +106,10 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 		context = this;
 		init();
 		identificatioinModeGame();
+		setPrefsValue();
 
 		btnReset.setOnClickListener(this);
+		btnStart.setOnClickListener(this);
 
 	}
 
@@ -77,8 +117,11 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 	protected void onResume() {
 		super.onResume();
 
+		isInfoGameInit = false;
+		isGameStart = false;
 		countSteps = 0;
-		setPrefsValue();
+		scoreUser = 0;
+		scoreEnemy = 0;
 	}
 
 	@Override
@@ -89,15 +132,37 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 		switch (v.getId()) {
 
 		case R.id.btn_GameReset:
-//			***************************************************************
-			gameView.cellX = 2;
-			gameView.cellY = 2;
-			gameView.invalidate();			
-//			***************************************************************
-			// Reset Activity
-//			Intent intent = getIntent();
-//			finish();
-//			startActivity(intent);
+			// if set of games is over
+			if (isCompetitioinOver) {
+				isCompetitioinOver = false;
+				// ltFieldView.setVisibility(View.VISIBLE);
+				// Restart Activity
+				Intent intent = getIntent();
+				finish();
+				startActivity(intent);
+				// ltFieldView.setVisibility(View.VISIBLE);
+			} else {
+				// Start 'new Game()'
+				initNewGame();
+			}
+			break;
+
+		case R.id.btn_GameStart:
+			// Count of steps in current 'game' set
+			countSteps = 0;
+			// Start 'new Game()'
+			initNewGame();
+			// Exchange visible of the buttons
+			btnStart.setVisibility(View.GONE);
+			btnReset.setVisibility(View.VISIBLE);
+			// Hide RadoiGroup and show Game Score
+			hideRadioGroup();
+			// Hide layout 'Info'
+			ltInfoGame.setVisibility(View.GONE);
+			// Flag 'isGameStart'
+			isGameStart = true;
+			// Choose currentUser
+			currentPlayer = playerUser;
 			break;
 
 		default:
@@ -105,16 +170,42 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 		}
 
 	}
-	
-//	***************************************************************************
-	public static void setOnTouchResult(String result){
-		player.doMove(tvUserCount, result);
-//		tvUserCount.setText(result);
-	}
-//	***************************************************************************
 
 	/**
-	 * Toggles tvPlayerName color in accordance with queue of steps 
+	 * Initialization 'newGame'
+	 */
+	private static void initNewGame() {
+		// Count of steps in current 'game'
+		// countSteps = 0;
+		// Difficult (kind) of playerBot brain
+		getDifficulty();
+		// Start 'new Game()'
+		game = new Game(enemy, wayEnum);
+		playerUser = game.getPlayerUser();
+		playerEnemy = game.getPlayerEnemy();
+		// Set controller into GameView
+		gameView.setGameFieldController(game.getGameFieldController());
+		// Refresh GameView
+		gameView.invalidate();
+		// Request focus on GameView
+		gameView.requestFocusFromTouch();
+	}
+
+	public static IPlayer getCurrentPlayer() {
+		return currentPlayer;
+	}
+
+	// ***************************************************************************
+	public static void setOnTouchResult(String result) {
+		// TODO
+	}
+
+	// ***************************************************************************
+
+	/**
+	 * Toggles tvPlayerName color in accordance with queue of steps <br>
+	 * It is called into GameView::onTouchEvent() after executing
+	 * 'GameField.setSignToCell(cellX, cellY)'
 	 */
 	public static void switchPlayer() {
 		Logger.v();
@@ -124,17 +215,82 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 		if (countSteps % 2 == 0) {
 			tvUserName.setTextColor(red);
 			tvEnemyName.setTextColor(green);
+			currentPlayer = playerEnemy;
+			// currentPlayerEnum = CurrentPlayerEnum.ENEMY;
 		} else {
 			tvUserName.setTextColor(green);
 			tvEnemyName.setTextColor(red);
+			currentPlayer = playerUser;
+			// currentPlayerEnum = CurrentPlayerEnum.USER;
 		}
 
 		countSteps++;
-		if (countSteps == 1 && enemy == EnumEnemy.BOT)
-			doneFirstMoveVsBot();
+	}
+
+	/**
+	 * It's called into GameView within its method 'onDraw' <br>
+	 * it's executed AFTER definition 'viewSize' and corresponding
+	 * 'fieldSizeCalculated'
+	 */
+	public static void initInfoGame() {
+		Logger.v();
+		// This condition exist in order to call this method one time only
+		if (isGameStart || isInfoGameInit)
+			return;
+
+		// Start 'new Game()'
+		initNewGame();
+
+		// Set INFO FieldSize
+		String fieldSizeString = String.valueOf(Game.getFieldSize());
+		tvInfo_FieldSize.setText(context.getResources().getString(
+				R.string.screen_info_field_size)
+				+ " " + fieldSizeString + "x" + fieldSizeString);
+		// Set INFO numCheckedSigns
+		String numCheckedString = String.valueOf(Game.getNumCheckedSigns());
+		tvInfo_NumChecked.setText(context.getResources().getString(
+				R.string.screen_info_checked_signs)
+				+ " " + numCheckedString);
+
+		isInfoGameInit = true;
+	}
+
+	/**
+	 * Increases score previous 'currentPlayer' after 'gameOver' occurrence
+	 * within GameView
+	 */
+	public static void increaseScoreWin() {
+
+		// if (currentPlayerEnum.equals(CurrentPlayerEnum.ENEMY)) {
+		if (currentPlayer.equals(playerEnemy)) {
+			scoreUser += 1;
+			tvUserCount.setText(String.valueOf(scoreUser));
+		}
+		// if (currentPlayerEnum.equals(CurrentPlayerEnum.USER)) {
+		if (currentPlayer.equals(playerUser)) {
+			scoreEnemy += 1;
+			tvEnemyCount.setText(String.valueOf(scoreEnemy));
+		}
+
+		if (scoreUser == numCompetitionWin) {
+			isCompetitioinOver = true;
+			showResultOfCompetition(tvUserName.getText().toString());
+		}
+
+		if (scoreEnemy == numCompetitionWin) {
+			isCompetitioinOver = true;
+			showResultOfCompetition(tvEnemyName.getText().toString());
+		}
+
 	}
 
 	// -------Private Methods----------------------
+
+	private static void showResultOfCompetition(String winnerName) {
+		tvGameResult_winnerName.setText(winnerName);
+		ltGameResult.setVisibility(View.VISIBLE);
+		ltFieldView.setVisibility(View.GONE);
+	}
 
 	private void identificatioinModeGame() {
 
@@ -167,8 +323,17 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 		}
 	}
 
+	private void hideRadioGroup() {
+		getDifficulty();
+		tvDifficult.setText(strDifficult);
+		ltRadioGroup.setVisibility(View.GONE);
+		ltGameScore.setVisibility(View.VISIBLE);
+		ltLevelDifficulty.setVisibility(View.VISIBLE);
+		ltConnectoinMode.setVisibility(View.GONE);
+	}
+
 	// =============Set Mode View Value===================
-	
+
 	private void seModeGameBot() {
 		tvEnemyName.setText(R.string.screen_vs_bot);
 	}
@@ -191,19 +356,10 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 		tvMode.setText(R.string.screen_inet);
 		ltConnectoinMode.setVisibility(View.VISIBLE);
 	}
-	
-	private static void doneFirstMoveVsBot() {
-		getDifficulty();
-		tvDifficult.setText(strDifficult);
-		ltRadioGroup.setVisibility(View.GONE);
-		ltGameCount.setVisibility(View.VISIBLE);
-		ltLevelDifficulty.setVisibility(View.VISIBLE);
-		ltConnectoinMode.setVisibility(View.GONE);
-	}
-	
+
 	private void setModeExceptBot() {
 		ltRadioGroup.setVisibility(View.GONE);
-		ltGameCount.setVisibility(View.VISIBLE);
+		ltGameScore.setVisibility(View.VISIBLE);
 		ltLevelDifficulty.setVisibility(View.GONE);
 	}
 
@@ -216,21 +372,27 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 
 		switch (radioGroup.getCheckedRadioButtonId()) {
 		case R.id.radio_Easy:
+			wayEnum = WayEnum.BRUTFORCE;
 			strDifficult = context.getResources().getString(
 					R.string.screen_easy);
 			break;
 
 		case R.id.radio_Middle:
+			// wayEnum = WayEnum.BRUTFORCE;
+			wayEnum = WayEnum.MINIMAX;
 			strDifficult = context.getResources().getString(
 					R.string.screen_middle);
 			break;
 
 		case R.id.radio_Hard:
+			// wayEnum = WayEnum.SPARE;
+			wayEnum = WayEnum.GARDNER;
 			strDifficult = context.getResources().getString(
 					R.string.screen_hard);
 			break;
 
 		default:
+			wayEnum = WayEnum.NONE;
 			break;
 		}
 
@@ -241,18 +403,35 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 	 * SOMEWHERE
 	 */
 	private void setPrefsValue() {
+
 		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		String userName = prefs.getString(
-				getResources().getString(R.string.pref_user_name_key),
-				getResources().getString(R.string.pref_user_name_value));
+				.getDefaultSharedPreferences(context);
+		// Set User Name
+		String userName = prefs
+				.getString(
+						context.getResources().getString(
+								R.string.pref_user_name_key),
+						context.getResources().getString(
+								R.string.pref_user_name_value));
 		tvUserName.setText(userName);
+		// Set INFO WinCount
+		String winCount = prefs
+				.getString(
+						context.getResources().getString(
+								R.string.pref_win_count_key),
+						context.getResources().getString(
+								R.string.pref_win_count_value));
+		tvInfo_WinCount.setText(context.getResources().getString(
+				R.string.screen_info_win_count)
+				+ " " + winCount);
+
+		numCompetitionWin = Integer.valueOf(winCount);
 	}
 
 	private void init() {
 
 		ltRadioGroup = (LinearLayout) findViewById(R.id.layout_GameRadioGroup);
-		ltGameCount = (LinearLayout) findViewById(R.id.layout_GameCount);
+		ltGameScore = (LinearLayout) findViewById(R.id.layout_GameCount);
 		ltLevelDifficulty = (LinearLayout) findViewById(R.id.layout_GameLevelDifficulty);
 		ltConnectoinMode = (LinearLayout) findViewById(R.id.layout_GameConnectionMode);
 
@@ -265,8 +444,19 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 		tvDifficult = (TextView) findViewById(R.id.tv_GameDifficult);
 		tvMode = (TextView) findViewById(R.id.tv_GameMode);
 
+		ltInfoGame = (RelativeLayout) findViewById(R.id.layout_Info);
+		tvInfo_WinCount = (TextView) findViewById(R.id.tv_info_WinCount);
+		tvInfo_FieldSize = (TextView) findViewById(R.id.tv_info_FieldSize);
+		tvInfo_NumChecked = (TextView) findViewById(R.id.tv_info_numChecked);
+
+		ltGameResult = (RelativeLayout) findViewById(R.id.layout_GameResult);
+		tvGameResult_winnerName = (TextView) findViewById(R.id.tv_GameResult_winnerName);
+
+		ltFieldView = (RelativeLayout) findViewById(R.id.layout_Field);
+
+		btnStart = (Button) findViewById(R.id.btn_GameStart);
 		btnReset = (Button) findViewById(R.id.btn_GameReset);
-		
+
 		gameView = (GameView) findViewById(R.id.game_view);
 
 	}

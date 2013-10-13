@@ -4,9 +4,7 @@ import java.util.List;
 
 import org.hexlet.gamexo.GameActivity;
 import org.hexlet.gamexo.R;
-import org.hexlet.gamexo.gamefield.players.Player;
 import org.hexlet.gamexo.utils.Logger;
-import org.hexlet.gamexo.utils.MyOwnMove;
 import org.hexlet.gamexo.utils.Sounder;
 import org.hexlet.gamexo.utils.Toaster;
 
@@ -35,9 +33,12 @@ public class GameView extends View {
 
 	private static final int X = 0; // coordinate 'x' = cellWin[0]
 	private static final int Y = 1; // coordinate 'y' = cellWin[1]
-	
-	private static int cellNum;// Amount of the cells from 'Preferences'
-	private static int numCheckedSigns;// Number signs to Win from 'Preferences'
+
+	private static int fieldSizePrefs;// Amount of the cells from 'Preferences'
+	private static int fieldSizeCalculated;// Field Size - calculated number of
+											// cells
+	private static int numCheckedSignsPrefs;// NumberSignsWIN from Preferences
+	private static GameFieldController gameFieldController;
 
 	private final Rect rectPictSrc = new Rect();// area of the picture
 	private final Rect rectPictDst = new Rect();// destination area of the view
@@ -46,43 +47,78 @@ public class GameView extends View {
 	private Paint paintLineField;
 	private Paint lineWinPaint;// ***NOT USED STILL
 
-	private Bitmap bmpSignPlayer1;
-	private Bitmap bmpSignPlayer2;
+	private Bitmap bmpSignPlayerX;
+	private Bitmap bmpSignPlayerO;
 	private Bitmap bmpCellWin;
 	private Drawable fieldBackground;// view fieldBackground
 
-	private int viewSize;
-	private int fieldSize;
-	private int cellSize;// Calculated size of the cell for the current screen
+	// size of the current 'view'
+	private int viewSizeDip;
+	// size of the field in 'dip'
+	private int fieldSizeDip;
+	// Calculated size of the cell for the current screen
+	private int cellSizeDip;
+
+	// It's that will returned by HumanLocalPlayer method 'doMove()'
+	private static int[] resultOnTouch = new int[2];
 
 	private Context context;
-	private GameFieldController gameFieldController;
-	
-//	****************************************************
-private Player player = new Player();
-private int count = 0;
-public int cellX = 0;
-public int cellY = 0;
-//	****************************************************
 
 	public GameView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 
 		this.context = context;
 		setPrefsValue();
+
 		requestFocus();// To give focus to a specific view
 
 		// Initialize something
 		init();
 
-		// GameField Matrix
-		GameField.initNewFieldMatrix(cellNum);
-		// GameFieldController
-		gameFieldController = new GameFieldController(cellNum, numCheckedSigns);
-
 		// Set rectangle for sign pictures and cellwinBackground
 		setRectSrc();
 
+	}
+
+	// ---------Getters and Setters----------------------------
+
+	/**
+	 * 
+	 * @return fieldSizeCalculated <br>
+	 *         It's size of field that is calculated in accordance with
+	 *         Preferences value and size of this View (display size)</br>
+	 */
+	public static int getFieldSizeCalculated() {
+		// Logger.v("fieldSizeCalculated = " + fieldSizeCalculated);
+		return fieldSizeCalculated;
+	}
+
+	/**
+	 * 
+	 * @return numCheckedSignsPrefs <br>
+	 *         It's corrected in accordance with some 'game restrictions' into
+	 *         method 'setPrefsValue()'
+	 */
+	public static int getNumCheckedSigns() {
+		return numCheckedSignsPrefs;
+	}
+
+	/**
+	 * 
+	 * @param gameFieldController
+	 *            - controller that is set into GameActivity::initNewGame()
+	 *            AFTER create 'new Game(enemy)'
+	 */
+	public void setGameFieldController(GameFieldController gameFieldController) {
+		GameView.gameFieldController = gameFieldController;
+	}
+
+	/**
+	 * 
+	 * @return resultOnTouch for method PlayerHumanLocal 'doMove()'
+	 */
+	public static int[] getResultOnTouch() {
+		return resultOnTouch;
 	}
 
 	// -------------Overridden View methods------------------
@@ -96,48 +132,51 @@ public int cellY = 0;
 		// Get view size
 		int width = MeasureSpec.getSize(widthMeasureSpec);
 		int height = MeasureSpec.getSize(heightMeasureSpec);
-		viewSize = width < height ? width : height;
 
-		fieldSize = calculateFieldSize();
-		Logger.v("Field size = " + fieldSize);
-		setMeasuredDimension(fieldSize, fieldSize);
+		viewSizeDip = width < height ? width : height;
+		fieldSizeDip = calculateFieldSizeDip();
+		setMeasuredDimension(fieldSizeDip, fieldSizeDip);
 
+		// Logger.v("width = " + width + " height = " + height);
+		// Logger.v("viewSizeDip = " + viewSizeDip);
+		// Logger.v("calculate::fieldSizeDip = " + fieldSizeDip);
 	}
-	
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		super.onDraw(canvas);		
-//		****************************
-		count += 1;
-		Logger.i("onDraw(canvas)*************** " + count + " cellX = " + cellX + " cellY = " + cellY);		
-		setRectDst((count + cellX) * cellSize, (count + cellY) * cellSize);
-		canvas.drawBitmap(bmpCellWin, rectPictSrc, rectPictDst,
-				paintBmpPict);
-//		***************************
+		super.onDraw(canvas);
+
+		Logger.v();
+
+		/**
+		 * Initialize 'Game' with calculated 'fieldSize' - in accordance with
+		 * conditions into 'initInfoGame()' it's called one time only
+		 */
+		GameActivity.initInfoGame();
 
 		// Draw vertical lines
-		int startVertX = cellSize;
+		int startVertX = cellSizeDip;
 		int startVertY = 0;
-		for (int i = 0; i < cellNum - 1; i++) {
-			canvas.drawLine(startVertX, startVertY, startVertX, fieldSize,
+		// Logger.v("fieldSizeCalculated = " + fieldSizeCalculated);
+
+		for (int i = 0; i < fieldSizeCalculated - 1; i++) {
+			canvas.drawLine(startVertX, startVertY, startVertX, fieldSizeDip,
 					paintLineField);
-			startVertX += cellSize;
+			startVertX += cellSizeDip;
 
 		}
 
 		// Draw horizontal lines
 		int startHorX = 0;
-		int startHorY = cellSize;
-		for (int i = 0; i < cellNum - 1; i++) {
-			canvas.drawLine(startHorX, startHorY, fieldSize, startHorY,
+		int startHorY = cellSizeDip;
+		for (int i = 0; i < fieldSizeCalculated - 1; i++) {
+			canvas.drawLine(startHorX, startHorY, fieldSizeDip, startHorY,
 					paintLineField);
-			startHorY += cellSize;
+			startHorY += cellSizeDip;
 		}
 
 		// Draws win cell
-		if (gameFieldController.getIsGameOver()) {
-
+		if (gameFieldController != null && gameFieldController.getIsGameOver()) {
 			Logger.v();
 
 			List<int[]> listCellWin = gameFieldController.getListCellWin();
@@ -145,30 +184,32 @@ public int cellY = 0;
 				Logger.v("cellWin[X] = " + cellWin[X] + ", cellWin[Y] = "
 						+ cellWin[Y]);
 
-				setRectDst(cellWin[X] * cellSize, cellWin[Y] * cellSize);
+				setRectDst(cellWin[X] * cellSizeDip, cellWin[Y] * cellSizeDip);
 				canvas.drawBitmap(bmpCellWin, rectPictSrc, rectPictDst,
 						paintBmpPict);
 			}
 
+			// Increase count of WIN one of the Players
+			GameActivity.increaseScoreWin();
 		}
 
 		// Draws sign within gameField in accordance with GameField::fieldMatrix
-		for (int i = 0; i < cellNum; i++) {
-			for (int j = 0; j < cellNum; j++) {
+		for (int i = 0; i < fieldSizeCalculated; i++) {
+			for (int j = 0; j < fieldSizeCalculated; j++) {
 
-				char sign = GameField.getCellValue(i, j);
+				Character sign = GameField.getCellValue(i, j);
 
-				setRectDst(i * cellSize, j * cellSize);
+				setRectDst(i * cellSizeDip, j * cellSizeDip);
 
 				switch (sign) {
 
 				case GameField.VALUE_X:
-					canvas.drawBitmap(bmpSignPlayer1, rectPictSrc, rectPictDst,
+					canvas.drawBitmap(bmpSignPlayerX, rectPictSrc, rectPictDst,
 							paintBmpPict);
 					break;
 
 				case GameField.VALUE_O:
-					canvas.drawBitmap(bmpSignPlayer2, rectPictSrc, rectPictDst,
+					canvas.drawBitmap(bmpSignPlayerO, rectPictSrc, rectPictDst,
 							paintBmpPict);
 					break;
 
@@ -183,6 +224,8 @@ public int cellY = 0;
 	public boolean onTouchEvent(MotionEvent event) {
 
 		Logger.v();
+		if (!GameActivity.isGameStart)
+			return false;
 
 		if (gameFieldController.getIsGameOver()) {
 			Toaster.doToastShort(context, "GameOver!");
@@ -194,42 +237,41 @@ public int cellY = 0;
 		if (action == MotionEvent.ACTION_DOWN) {
 			return true;
 		} else if (action == MotionEvent.ACTION_UP) {
-			// // Get coordinates of touch
+			// Get coordinates of touch /dip/
 			int x = (int) event.getX();
 			int y = (int) event.getY();
-			int cellX = 0;
-			int cellY = 0;
+			// Coordinates of touched cell /numero/ i.e. 'fieldMatrix[x][y]'
+			int cellX = (int) Math.floor(x / cellSizeDip);
+			int cellY = (int) Math.floor(y / cellSizeDip);
 
-			// Calculate fieldMatrix[x][y]
-			int cellNumeroX = (int) Math.floor(x / cellSize);
-			int cellNumeroY = (int) Math.floor(y / cellSize);
-			// Calculate coordinate touched cell
-			cellX = cellSize * cellNumeroX;
-			cellY = cellSize * cellNumeroY;
-//	**************************************************************		
-			int[] move = new int[]{cellNumeroX,cellNumeroY};
-			if(move != null){
-//				public static method into GameActivity
-				GameActivity.setOnTouchResult("" + move[0]);//tvUserCount.setText(result);
-			}
-			
-			
-//  **************************************************************
+			// It's that will returned by HumanLocalPlayer method 'doMove()'
+			// resultOnTouch = new int[] { cellX, cellY };
+			resultOnTouch[X] = cellX;
+			resultOnTouch[Y] = cellY;
+			Logger.v("resultOnTouch[X] = " + resultOnTouch[X]
+					+ ", resultOnTouch[Y] = " + resultOnTouch[Y]);
 
+			// ***********************************************************************
+
+			int[] move = GameActivity.getCurrentPlayer().doMove();
+
+			// ***********************************************************************
 			// Set value into fieldMatrix
-			if (GameField.setSignToCell(cellNumeroX, cellNumeroY)) {
+			if (GameField.setSignToCell(move[X], move[Y])) {
 
-				if (gameFieldController.checkGameOver(cellNumeroX, cellNumeroY)) {
+				if (gameFieldController.checkGameOver(move[X], move[Y])) {
 					Toaster.doToastShort(context, "GameOver!");
 				}
 
-				Logger.v("cellX = " + cellX + ", cellY = " + cellY);
+				Logger.v("move[X] = " + move[Y] + ", move[Y] = " + move[Y]);
 				GameActivity.switchPlayer();
 
 				Sounder.doSound(context, R.raw.beep);
 				invalidate();
+
 				return true;
 			}
+
 			Sounder.doSound(context, R.raw.wilhelm_scream);
 			return false;
 		}
@@ -261,8 +303,8 @@ public int cellY = 0;
 	private void setRectDst(int x, int y) {
 		int left = x;
 		int top = y;
-		int right = x + cellSize;
-		int bottom = y + cellSize;
+		int right = x + cellSizeDip;
+		int bottom = y + cellSizeDip;
 
 		rectPictDst.set(left, top, right, bottom);
 	}
@@ -271,7 +313,8 @@ public int cellY = 0;
 	private void init() {
 
 		// Set Background
-		fieldBackground = getResources().getDrawable(R.drawable.field_background);
+		fieldBackground = getResources().getDrawable(
+				R.drawable.field_background);
 		setBackgroundDrawable(fieldBackground);
 
 		paintBmpPict = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -294,38 +337,44 @@ public int cellY = 0;
 		lineWinPaint.setStrokeWidth(lineWinWidth);
 		lineWinPaint.setStyle(Style.STROKE);
 
-		// Picture for Player's Sign and cellWin
-		bmpSignPlayer1 = getResBitmap(R.drawable.lib_cross);
-		bmpSignPlayer2 = getResBitmap(R.drawable.lib_circle);
+		// Picture for PlayerHumanLocal's Sign and cellWin
+		bmpSignPlayerX = getResBitmap(R.drawable.lib_cross);
+		bmpSignPlayerO = getResBitmap(R.drawable.lib_circle);
 		bmpCellWin = getResBitmap(R.drawable.cell_win_background);
 	}
 
-	private int calculateFieldSize() {
+	private int calculateFieldSizeDip() {
+		fieldSizeDip = calculateCellSize() * fieldSizeCalculated;
 
-		fieldSize = calculateCellSize() * cellNum;
-		// Logger.v("fieldSize = " + fieldSize);
-		return fieldSize;
+		// Logger.v("calculateFieldSize()::fieldSizeCalculated = "
+		// + fieldSizeCalculated);
+		// Logger.v("calculateFieldSize()::cellSizeDip = " + cellSizeDip);
+		// Logger.v("calculateFieldSize()::fieldSizeDip = " + fieldSizeDip);
+
+		return fieldSizeDip;
 	}
 
 	private int calculateCellSize() {
 
 		int cellSizeMin = getResources().getInteger(R.integer.cell_size_min);
-		int cellSizeCalc = (int) Math.floor(viewSize / cellNum);
+		int cellSizeCalc = (int) Math.floor(viewSizeDip / fieldSizePrefs);
 
 		if (cellSizeMin < cellSizeCalc) {
-			cellSize = cellSizeCalc;
+			cellSizeDip = cellSizeCalc;
+			fieldSizeCalculated = fieldSizePrefs;
 
 		} else {
-			cellSize = cellSizeMin;
-			cellNum = (int) Math.floor(viewSize / cellSizeMin);
+			cellSizeDip = cellSizeMin;
+			fieldSizeCalculated = (int) Math.floor(viewSizeDip / cellSizeMin);
 		}
 
-		// Logger.v("cellSize = " + cellSize);
-		return cellSize;
+		// Logger.v("cellSizeDip = " + cellSizeDip);
+		return cellSizeDip;
 	}
 
 	/**
-	 * Sets value from 'Preferences' such as 'fieldSize' and 'numCheckedSigns' to SOMEWHERE
+	 * Sets value from 'Preferences' such as 'fieldSizeDip' and
+	 * 'numCheckedSignsPrefs' to SOMEWHERE
 	 */
 	private void setPrefsValue() {
 		SharedPreferences prefs = PreferenceManager
@@ -337,20 +386,29 @@ public int cellY = 0;
 				.getString(R.string.pref_field_size_value)));
 
 		// Get amount of the cells from 'Preferences'
-		cellNum = Integer.valueOf(prefs.getString(
-				getResources().getString(R.string.pref_field_size_key),
-				getResources().getString(R.string.pref_field_size_value)));
-		if (cellNum < defaultValue)
-			cellNum = defaultValue;
+		fieldSizePrefs = Integer.valueOf(prefs.getString(getResources()
+				.getString(R.string.pref_field_size_key), getResources()
+				.getString(R.string.pref_field_size_value)));
+		if (fieldSizePrefs < defaultValue)
+			fieldSizePrefs = defaultValue;
 
 		// Get number signs to Win from 'Preferences'
-		numCheckedSigns = Integer.valueOf(prefs.getString(getResources()
+		numCheckedSignsPrefs = Integer.valueOf(prefs.getString(getResources()
 				.getString(R.string.pref_num_check_signs_key), getResources()
 				.getString(R.string.pref_num_check_signs_value)));
-		if (cellNum < numCheckedSigns) {
-			numCheckedSigns = defaultValue;
+
+		// Game balance restrictions
+		if (fieldSizePrefs < 3) {
+			fieldSizePrefs = defaultValue;
 		}
 
+		if (fieldSizePrefs < numCheckedSignsPrefs) {
+			numCheckedSignsPrefs = defaultValue;
+		}
+
+		if ((3 < fieldSizePrefs) && (numCheckedSignsPrefs < 4)) {
+			numCheckedSignsPrefs = 4;
+		}
 	}
 
 	/**
@@ -377,7 +435,7 @@ public int cellY = 0;
 			bmp = Bitmap.createBitmap(width, height, Config.ARGB_8888);
 
 			Canvas canvas = new Canvas(bmp);
-			drawable.setBounds(0, 0, cellSize, cellSize);
+			drawable.setBounds(0, 0, cellSizeDip, cellSizeDip);
 			drawable.draw(canvas);
 		}
 

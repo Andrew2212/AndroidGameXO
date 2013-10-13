@@ -175,11 +175,10 @@
                 android:paddingLeft="@dimen/activity_margin"
                 android:text="@string/screen_bluetooth"
                 android:textStyle="bold" />
-
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/layout_GameField"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -187,14 +186,82 @@
         android:layout_below="@+id/layout_GameTop"
         android:gravity="center" >
 
-        <org.hexlet.gamexo.gamefield.GameView
-            android:id="@+id/game_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="@dimen/activity_vertical_margin" />
+        <RelativeLayout
+            android:id="@+id/layout_Field"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:visibility="visible" >
 
-    </LinearLayout>
+            <org.hexlet.gamexo.gamefield.GameView
+                android:id="@+id/game_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/activity_vertical_margin" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_Info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/activity_vertical_margin" >
+
+            <TextView
+                android:id="@+id/tv_info_GameOptions"
+                style="@style/tv_GameInfo"
+                android:layout_above="@+id/tv_info_WinCount"
+                android:text="@string/screen_info_game_options" />
+
+            <TextView
+                android:id="@+id/tv_info_WinCount"
+                style="@style/tv_GameInfo"
+                android:layout_above="@+id/tv_info_FieldSize" />
+
+            <TextView
+                android:id="@+id/tv_info_FieldSize"
+                style="@style/tv_GameInfo"
+                android:layout_centerVertical="true" />
+
+            <TextView
+                android:id="@+id/tv_info_numChecked"
+                style="@style/tv_GameInfo"
+                android:layout_below="@+id/tv_info_FieldSize" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_GameResult"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:visibility="gone" >
+
+            <TextView
+                android:id="@+id/tv_GameResult"
+                style="@style/tv_GameInfo"
+                android:layout_above="@+id/tv_GameResult_winnerName"
+                android:text="@string/screen_game_result" />
+
+            <TextView
+                android:id="@+id/tv_GameResult_winnerName"
+                style="@style/tv_GameInfo"
+                android:layout_centerVertical="true" />
+
+            <TextView
+                android:id="@+id/tv_GameResult_isWinner"
+                style="@style/tv_GameInfo"
+                android:layout_below="@+id/tv_GameResult_winnerName"
+                android:text="@string/screen_game_result_is_winner" />
+        </RelativeLayout>
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/layout_GameButtons"
@@ -206,11 +273,20 @@
         android:paddingTop="@dimen/activity_vertical_margin" >
 
         <Button
+            android:id="@+id/btn_GameStart"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_start"
+            android:textColor="@color/orange" />
+
+        <Button
             android:id="@+id/btn_GameReset"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/btn_reset" />
+            android:text="@string/btn_reset"
+            android:visibility="gone" />
     </LinearLayout>
 
 </RelativeLayout>

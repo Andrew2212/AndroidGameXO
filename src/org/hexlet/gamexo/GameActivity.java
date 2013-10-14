@@ -5,7 +5,10 @@ import org.hexlet.gamexo.gamefield.EnumEnemy;
 import org.hexlet.gamexo.gamefield.Game;
 import org.hexlet.gamexo.gamefield.GameField;
 import org.hexlet.gamexo.gamefield.GameView;
+import org.hexlet.gamexo.gamefield.players.HandlerNotHumanLocalMove;
 import org.hexlet.gamexo.gamefield.players.IPlayer;
+import org.hexlet.gamexo.gamefield.players.PlayerBot;
+import org.hexlet.gamexo.gamefield.players.PlayerHumanLocal;
 import org.hexlet.gamexo.utils.Logger;
 import org.hexlet.gamexo.utils.Sounder;
 
@@ -13,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -34,12 +38,12 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 	private static LinearLayout ltGameScore;
 	private static LinearLayout ltLevelDifficulty;
 	private static LinearLayout ltConnectoinMode;
-
+	// Info BEFORE game start
 	private static RelativeLayout ltInfoGame;
 	private static TextView tvInfo_WinCount;
 	private static TextView tvInfo_FieldSize;
 	private static TextView tvInfo_NumChecked;
-
+	// Info AFTER competition is over
 	private static RelativeLayout ltGameResult;
 	private static TextView tvGameResult_winnerName;
 
@@ -56,21 +60,17 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 	private static int numCompetitionWin; // 'winCount' from Preferences
 	private static boolean isCompetitioinOver = false;
 
-	// *********************************************************************
+	// *******************Added***********************
 	private static IPlayer playerUser;
 	private static IPlayer playerEnemy;
 	private static IPlayer currentPlayer;
-	private static char signPlayerUser;//Set value into 'setPrefsValue()'
-
-	// private enum CurrentPlayerEnum {
-	// USER, ENEMY;
-	// }
-
-	// private static CurrentPlayerEnum currentPlayerEnum;
+	// Set value into 'setPrefsValue()'
+	private static char signPlayerUser;
 
 	private static Game game;
 	private static GameView gameView;
-	// ********************************************************************
+	public static HandlerNotHumanLocalMove handler;
+	// ********************************************
 	private static TextView tvDifficult;
 	private TextView tvMode;
 
@@ -136,16 +136,15 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 			// if set of games is over
 			if (isCompetitioinOver) {
 				isCompetitioinOver = false;
-				// ltFieldView.setVisibility(View.VISIBLE);
 				// Restart Activity
 				Intent intent = getIntent();
 				finish();
 				startActivity(intent);
-				// ltFieldView.setVisibility(View.VISIBLE);
 			} else {
 				// Start 'new Game()'
 				initNewGame();
 			}
+
 			break;
 
 		case R.id.btn_GameStart:
@@ -164,6 +163,11 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 			isGameStart = true;
 			// Choose currentUser
 			currentPlayer = playerUser;
+
+			// ======Try to use Handler==============
+			initHandler();
+			// ======Try to use Handler==============
+
 			break;
 
 		default:
@@ -176,8 +180,6 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 	 * Initialization 'newGame'
 	 */
 	private static void initNewGame() {
-		// Count of steps in current 'game'
-		// countSteps = 0;
 		// Difficult (kind) of playerBot brain
 		getDifficulty();
 		// Start 'new Game()'
@@ -185,23 +187,20 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 		playerUser = game.getPlayerUser();
 		playerEnemy = game.getPlayerEnemy();
 		// Set controller into GameView
-		gameView.setGameFieldController(game.getGameFieldController());
+		gameView.setGameFieldController(Game.getGameFieldController());
 		// Refresh GameView
 		gameView.invalidate();
 		// Request focus on GameView
 		gameView.requestFocusFromTouch();
+		// ======Try to use Handler==============
+		// Try to get enemy move
+		getNotHumanLocalEnemyMove();
+		// ======Try to use Handler==============
 	}
 
 	public static IPlayer getCurrentPlayer() {
 		return currentPlayer;
 	}
-
-	// ***************************************************************************
-	public static void setOnTouchResult(String result) {
-		// TODO
-	}
-
-	// ***************************************************************************
 
 	/**
 	 * Toggles tvPlayerName color in accordance with queue of steps <br>
@@ -217,12 +216,14 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 			tvUserName.setTextColor(red);
 			tvEnemyName.setTextColor(green);
 			currentPlayer = playerEnemy;
-			// currentPlayerEnum = CurrentPlayerEnum.ENEMY;
+
+			getNotHumanLocalEnemyMove();
+
 		} else {
 			tvUserName.setTextColor(green);
 			tvEnemyName.setTextColor(red);
 			currentPlayer = playerUser;
-			// currentPlayerEnum = CurrentPlayerEnum.USER;
+
 		}
 
 		countSteps++;
@@ -262,12 +263,11 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 	 */
 	public static void increaseScoreWin() {
 
-		// if (currentPlayerEnum.equals(CurrentPlayerEnum.ENEMY)) {
 		if (currentPlayer.equals(playerEnemy)) {
 			scoreUser += 1;
 			tvUserCount.setText(String.valueOf(scoreUser));
 		}
-		// if (currentPlayerEnum.equals(CurrentPlayerEnum.USER)) {
+
 		if (currentPlayer.equals(playerUser)) {
 			scoreEnemy += 1;
 			tvEnemyCount.setText(String.valueOf(scoreEnemy));
@@ -293,6 +293,28 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 
 	// -------Private Methods----------------------
 
+	// ================Try to use Handler========================
+	private static void initHandler() {
+		handler = new HandlerNotHumanLocalMove(context, gameView, playerEnemy);
+	}
+
+	private static void getNotHumanLocalEnemyMove() {
+		// Logger.v("currentPlayer = " + currentPlayer);
+		if (currentPlayer instanceof PlayerHumanLocal)
+			return;
+		if (Game.getIsGameOver() || currentPlayer == null)
+			return;
+
+		@SuppressWarnings("rawtypes")
+		Message msg = ((PlayerBot) currentPlayer).obtainMessage();
+		int delay = context.getResources().getInteger(
+				R.integer.delay_bot_message);
+		if (!(currentPlayer instanceof PlayerHumanLocal))
+			handler.sendMessageDelayed(msg, delay);
+	}
+	// ================Try to use Handler========================
+
+	
 	private static void showResultOfCompetition(String winnerName) {
 		tvGameResult_winnerName.setText(winnerName);
 		ltGameResult.setVisibility(View.VISIBLE);

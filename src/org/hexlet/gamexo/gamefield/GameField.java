@@ -12,7 +12,7 @@ public class GameField {
 	public static final char VALUE_O = 'O';
 	public static final char VALUE_DEFAULT = '_';
 
-	private static int fieldSize;//
+	private static int fieldSize;
 	private static Character[][] fieldMatrix;
 
 	public static void initNewFieldMatrix(int fieldSize) {
@@ -22,7 +22,10 @@ public class GameField {
 		GameField.fieldSize = fieldSize;
 		fieldMatrix = new Character[fieldSize][fieldSize];
 		fillDefaultGameMatrix();
+
 	}
+
+	// -------Getters and Setters---------
 
 	/**
 	 * @param cellNumeroX
@@ -41,11 +44,11 @@ public class GameField {
 
 		Character sign = playerSign;
 		fieldMatrix[cellNumeroX][cellNumeroY] = sign;
+		// Check out current move
+		Game.getGameFieldController().checkGameOver(cellNumeroX, cellNumeroY);
 
 		return true;
 	}
-
-	// -------Getters and Setters---------
 
 	public static Character[][] getFieldMatrix() {
 		int size = fieldMatrix.length;

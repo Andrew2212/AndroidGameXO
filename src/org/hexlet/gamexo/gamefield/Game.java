@@ -14,12 +14,18 @@ public class Game {
 	private static int fieldSize;
 	private static int numCheckedSigns;
 	private static GameFieldController gameFieldController;
+	private static boolean isGameOver;
 
 	private IPlayer playerUser;
 	private IPlayer playerEnemy;
 	
 	private char signPlayerUser;
 	private char signPlayerEnemy;
+	private static GameStateEnum gameState;
+	
+	public enum GameStateEnum {
+		WIN, DRAW, CONTINUE;
+	}
 
 	public Game(EnumEnemy enumEmemy, WayEnum wayEnum) {
 
@@ -48,10 +54,31 @@ public class Game {
 		// Create playerEnemy
 		signPlayerEnemy = specifySignPlayerEnemy(signPlayerUser);
 		chooseAndInitEnemy(signPlayerEnemy);
+		
+		isGameOver = false;
+	}
+	
+
+	public static GameStateEnum getGameState() {
+		return gameState;
 	}
 
-	public GameFieldController getGameFieldController() {
+
+	public static void setGameState(GameStateEnum gameState) {
+		Game.gameState = gameState;
+	}
+
+
+	public static GameFieldController getGameFieldController() {
 		return gameFieldController;
+	}
+	
+	public static void setIsGameOver(boolean isGameOver){
+		Game.isGameOver = isGameOver;
+	}
+	
+	public static boolean getIsGameOver(){
+		return isGameOver;
 	}
 	
 	private char specifySignPlayerEnemy(char signPlayerUser){
@@ -140,3 +167,4 @@ public class Game {
 	}
 
 }
+

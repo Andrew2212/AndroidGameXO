@@ -6,9 +6,21 @@ import org.hexlet.gamexo.ai.WayEnum;
 import org.hexlet.gamexo.ai.brutforceway.BrutforceAI;
 import org.hexlet.gamexo.gamefield.Game;
 import org.hexlet.gamexo.gamefield.GameField;
+import org.hexlet.gamexo.utils.Logger;
 
+import android.os.Bundle;
+import android.os.Message;
+/**
+ * 
+ * @author Andrew2212
+ *
+ * @param <T>
+ */
 public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 
+	public static final String KEY_MOVE = "keyMove";
+	private static final String KEY_X = "keyX";
+	private static final String KEY_Y = "keyY";
 	private static final int X = 0;
 	private static final int Y = 1;
 	private static int[] position = new int[2];
@@ -53,7 +65,7 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public int[] doMove() {
-
+		Logger.v();
 		do {
 			position = getCoordinate(iBrainAI,
 					(T[][]) GameField.getFieldMatrix(),
@@ -66,19 +78,50 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public int[] getCoordinate(IBrainAI iBrainAI, T[][] fieldMatrix, T figure) {
+		Logger.v();
 		position = iBrainAI.findMove(fieldMatrix, figure);
 		System.out.println("PlayerBot::getCoordinate::position[X] = "
 				+ position[X] + ", position[Y] = " + position[Y]);
 		return position;
 	}
 
+	// Check out whether it is necessary
 	@Override
 	public boolean setMove(int cellX, int cellY, char signPlayer) {
+		Logger.v();
 		return GameField.setSignToCell(cellX, cellY, signPlayer);
 	}
 
 	public char getSignPlayer() {
 		return signPlayer;
+	}
+
+	/**
+	 * 
+	 * @return message that contains 'int[] move'
+	 */
+	public Message obtainMessage() {
+		Logger.v();
+		// PlayerBot by 'doMove()' returns 'the best AI move'
+		int[] move = doMove();
+		Bundle msgData = new Bundle();
+		msgData.putIntArray(KEY_MOVE, move);
+		msgData.putInt(KEY_X, move[X]);
+		msgData.putInt(KEY_Y, move[Y]);
+
+		Message message = new Message();
+		message.what = HandlerNotHumanLocalMove.MSG_BOT;
+		message.setData(msgData);
+
+		message.getData().getIntArray(KEY_MOVE);
+		return message;
+	}
+
+	// **************CHECK OUT IT!********NOT USED YET!
+	public int[] setCalculatedMove() {
+		int[] move = doMove();
+		GameField.setSignToCell(move[X], move[Y], getSignPlayer());
+		return move;
 	}
 
 }

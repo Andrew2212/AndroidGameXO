@@ -4,8 +4,9 @@ import java.util.List;
 
 import org.hexlet.gamexo.GameActivity;
 import org.hexlet.gamexo.R;
-import org.hexlet.gamexo.gamefield.GameFieldController.GameStateEnum;
+import org.hexlet.gamexo.gamefield.Game.GameStateEnum;
 import org.hexlet.gamexo.gamefield.players.IPlayer;
+import org.hexlet.gamexo.gamefield.players.PlayerHumanLocal;
 import org.hexlet.gamexo.utils.Logger;
 import org.hexlet.gamexo.utils.Sounder;
 import org.hexlet.gamexo.utils.Toaster;
@@ -36,10 +37,13 @@ public class GameView extends View {
 	private static final int X = 0; // coordinate 'x' = cellWin[0]
 	private static final int Y = 1; // coordinate 'y' = cellWin[1]
 
-	private static int fieldSizePrefs;// Amount of the cells from 'Preferences'
-	private static int fieldSizeCalculated;// Field Size - calculated number of
-											// cells
-	private static int numCheckedSignsPrefs;// NumberSignsWIN from Preferences
+	// Amount of the cells from 'Preferences'
+	private static int fieldSizePrefs;
+	// Field Size - calculated number of cells
+	private static int fieldSizeCalculated;
+	// NumberSignsWIN from Preferences
+	private static int numCheckedSignsPrefs;
+	// Controller is set into GameActivity within method 'initNewGame()'
 	private static GameFieldController gameFieldController;
 
 	private final Rect rectPictSrc = new Rect();// area of the picture
@@ -82,6 +86,169 @@ public class GameView extends View {
 
 	}
 
+	// -------------Overridden View methods------------------
+	/**
+	 * Keep the view squared
+	 */
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+		// Get view size
+		int width = MeasureSpec.getSize(widthMeasureSpec);
+		int height = MeasureSpec.getSize(heightMeasureSpec);
+
+		viewSizeDip = width < height ? width : height;
+		fieldSizeDip = calculateFieldSizeDip();
+		setMeasuredDimension(fieldSizeDip, fieldSizeDip);
+
+		// Logger.v("width = " + width + " height = " + height);
+		// Logger.v("viewSizeDip = " + viewSizeDip);
+		// Logger.v("calculate::fieldSizeDip = " + fieldSizeDip);
+	}
+
+	@Override
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+
+		Logger.v("Game.getGameState() = " + Game.getGameState());
+
+		/**
+		 * Initialize 'Game' with calculated 'fieldSize' - in accordance with
+		 * conditions into 'initInfoGame()' it's called one time only
+		 */
+		GameActivity.initInfoGame();
+
+		// Draw vertical lines
+		int startVertX = cellSizeDip;
+		int startVertY = 0;
+		// Logger.v("fieldSizeCalculated = " + fieldSizeCalculated);
+
+		for (int i = 0; i < fieldSizeCalculated - 1; i++) {
+			canvas.drawLine(startVertX, startVertY, startVertX, fieldSizeDip,
+					paintLineField);
+			startVertX += cellSizeDip;
+
+		}
+
+		// Draw horizontal lines
+		int startHorX = 0;
+		int startHorY = cellSizeDip;
+		for (int i = 0; i < fieldSizeCalculated - 1; i++) {
+			canvas.drawLine(startHorX, startHorY, fieldSizeDip, startHorY,
+					paintLineField);
+			startHorY += cellSizeDip;
+		}
+
+		// Draws win cell
+		if (Game.getGameState() == GameStateEnum.WIN) {
+			Logger.v();
+
+			List<int[]> listCellWin = gameFieldController.getListCellWin();
+			for (int[] cellWin : listCellWin) {
+				Logger.v("cellWin[X] = " + cellWin[X] + ", cellWin[Y] = "
+						+ cellWin[Y]);
+
+				setRectDst(cellWin[X] * cellSizeDip, cellWin[Y] * cellSizeDip);
+				canvas.drawBitmap(bmpCellWin, rectPictSrc, rectPictDst,
+						paintBmpPict);
+			}
+
+			// Increase count of WIN one of the Players
+			GameActivity.increaseScoreWin();
+		}
+
+		// Draws sign within gameField in accordance with GameField::fieldMatrix
+		for (int i = 0; i < fieldSizeCalculated; i++) {
+			for (int j = 0; j < fieldSizeCalculated; j++) {
+
+				Character sign = GameField.getCellValue(i, j);
+
+				setRectDst(i * cellSizeDip, j * cellSizeDip);
+
+				switch (sign) {
+
+				case GameField.VALUE_X:
+					canvas.drawBitmap(bmpSignPlayerX, rectPictSrc, rectPictDst,
+							paintBmpPict);
+					break;
+
+				case GameField.VALUE_O:
+					canvas.drawBitmap(bmpSignPlayerO, rectPictSrc, rectPictDst,
+							paintBmpPict);
+					break;
+
+				default:
+					break;
+				}
+			}
+		}
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+
+		Logger.v();
+		IPlayer currentPlayer = GameActivity.getCurrentPlayer();
+
+		// Cause of 'init new Game' for getting INFO
+		if (!GameActivity.isGameStart)
+			return false;
+
+		// if (gameFieldController.getIsGameOver()) {
+		if (Game.getIsGameOver()) {
+			Toaster.doToastShort(context, "GameOver!");
+			return false;
+		}
+
+		// For 'playerBot' and 'playerRemote'
+		if (!(currentPlayer instanceof PlayerHumanLocal))
+			return false;
+
+		int action = event.getAction();
+
+		if (action == MotionEvent.ACTION_DOWN) {
+			return true;
+		} else if (action == MotionEvent.ACTION_UP) {
+			// Get coordinates of touch /dip/
+			int x = (int) event.getX();
+			int y = (int) event.getY();
+			// Coordinates of touched cell /numero/ i.e. 'fieldMatrix[x][y]'
+			int cellX = (int) Math.floor(x / cellSizeDip);
+			int cellY = (int) Math.floor(y / cellSizeDip);
+
+			// It's that will returned by HumanLocalPlayer method 'doMove()'
+			resultOnTouch[X] = cellX;
+			resultOnTouch[Y] = cellY;
+			Logger.v("resultOnTouch[X] = " + resultOnTouch[X]
+					+ ", resultOnTouch[Y] = " + resultOnTouch[Y]);
+
+			// ***********Human Local players move************************
+			// IPlayer currentPlayer = GameActivity.getCurrentPlayer();
+			Logger.v("currentPlayer = " + currentPlayer);
+			int[] move = currentPlayer.doMove();
+			char signPlayer = currentPlayer.getSignPlayer();
+			// ***********************************************************
+
+			// Set value into fieldMatrix
+			if (currentPlayer.setMove(move[X], move[Y], signPlayer)) {
+
+				Logger.v("currentPlayer = " + currentPlayer);
+				Logger.v("move[X] = " + move[Y] + ", move[Y] = " + move[Y]);
+				GameActivity.switchPlayer();
+
+				Sounder.doSound(context, R.raw.beep);
+				invalidate();
+				return true;
+			}
+
+			Sounder.doSound(context, R.raw.wilhelm_scream);
+			return false;
+		}
+
+		return false;
+	}
+
 	// ---------Getters and Setters----------------------------
 
 	/**
@@ -121,166 +288,6 @@ public class GameView extends View {
 	 */
 	public static int[] getResultOnTouch() {
 		return resultOnTouch;
-	}
-
-	// -------------Overridden View methods------------------
-	/**
-	 * Keep the view squared
-	 */
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-		// Get view size
-		int width = MeasureSpec.getSize(widthMeasureSpec);
-		int height = MeasureSpec.getSize(heightMeasureSpec);
-
-		viewSizeDip = width < height ? width : height;
-		fieldSizeDip = calculateFieldSizeDip();
-		setMeasuredDimension(fieldSizeDip, fieldSizeDip);
-
-		// Logger.v("width = " + width + " height = " + height);
-		// Logger.v("viewSizeDip = " + viewSizeDip);
-		// Logger.v("calculate::fieldSizeDip = " + fieldSizeDip);
-	}
-
-	@Override
-	protected void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
-
-		Logger.v();
-
-		/**
-		 * Initialize 'Game' with calculated 'fieldSize' - in accordance with
-		 * conditions into 'initInfoGame()' it's called one time only
-		 */
-		GameActivity.initInfoGame();
-
-		// Draw vertical lines
-		int startVertX = cellSizeDip;
-		int startVertY = 0;
-		// Logger.v("fieldSizeCalculated = " + fieldSizeCalculated);
-
-		for (int i = 0; i < fieldSizeCalculated - 1; i++) {
-			canvas.drawLine(startVertX, startVertY, startVertX, fieldSizeDip,
-					paintLineField);
-			startVertX += cellSizeDip;
-
-		}
-
-		// Draw horizontal lines
-		int startHorX = 0;
-		int startHorY = cellSizeDip;
-		for (int i = 0; i < fieldSizeCalculated - 1; i++) {
-			canvas.drawLine(startHorX, startHorY, fieldSizeDip, startHorY,
-					paintLineField);
-			startHorY += cellSizeDip;
-		}
-
-		// Draws win cell
-		if (gameFieldController != null && gameFieldController.getIsGameOver()) {
-			Logger.v();
-
-			List<int[]> listCellWin = gameFieldController.getListCellWin();
-			for (int[] cellWin : listCellWin) {
-				Logger.v("cellWin[X] = " + cellWin[X] + ", cellWin[Y] = "
-						+ cellWin[Y]);
-
-				setRectDst(cellWin[X] * cellSizeDip, cellWin[Y] * cellSizeDip);
-				canvas.drawBitmap(bmpCellWin, rectPictSrc, rectPictDst,
-						paintBmpPict);
-			}
-
-			// Increase count of WIN one of the Players
-			if (gameFieldController.getGameState() == GameStateEnum.WIN) {
-				GameActivity.increaseScoreWin();
-			}
-		}
-
-		// Draws sign within gameField in accordance with GameField::fieldMatrix
-		for (int i = 0; i < fieldSizeCalculated; i++) {
-			for (int j = 0; j < fieldSizeCalculated; j++) {
-
-				Character sign = GameField.getCellValue(i, j);
-
-				setRectDst(i * cellSizeDip, j * cellSizeDip);
-
-				switch (sign) {
-
-				case GameField.VALUE_X:
-					canvas.drawBitmap(bmpSignPlayerX, rectPictSrc, rectPictDst,
-							paintBmpPict);
-					break;
-
-				case GameField.VALUE_O:
-					canvas.drawBitmap(bmpSignPlayerO, rectPictSrc, rectPictDst,
-							paintBmpPict);
-					break;
-
-				default:
-					break;
-				}
-			}
-		}
-	}
-
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-
-		Logger.v();
-		if (!GameActivity.isGameStart)
-			return false;
-
-		if (gameFieldController.getIsGameOver()) {
-			Toaster.doToastShort(context, "GameOver!");
-			return false;
-		}
-
-		int action = event.getAction();
-
-		if (action == MotionEvent.ACTION_DOWN) {
-			return true;
-		} else if (action == MotionEvent.ACTION_UP) {
-			// Get coordinates of touch /dip/
-			int x = (int) event.getX();
-			int y = (int) event.getY();
-			// Coordinates of touched cell /numero/ i.e. 'fieldMatrix[x][y]'
-			int cellX = (int) Math.floor(x / cellSizeDip);
-			int cellY = (int) Math.floor(y / cellSizeDip);
-
-			// It's that will returned by HumanLocalPlayer method 'doMove()'
-			resultOnTouch[X] = cellX;
-			resultOnTouch[Y] = cellY;
-			Logger.v("resultOnTouch[X] = " + resultOnTouch[X]
-					+ ", resultOnTouch[Y] = " + resultOnTouch[Y]);
-
-			// ***********************************************************************
-			IPlayer currentPlayer = GameActivity.getCurrentPlayer();
-			int[] move = currentPlayer.doMove();
-			char signPlayer = currentPlayer.getSignPlayer();
-
-			// ***********************************************************************
-			// Set value into fieldMatrix
-			if (currentPlayer.setMove(move[X], move[Y], signPlayer)) {
-
-				if (gameFieldController.checkGameOver(move[X], move[Y])) {
-					Toaster.doToastShort(context, "GameOver!");
-				}
-
-				Logger.v("move[X] = " + move[Y] + ", move[Y] = " + move[Y]);
-				GameActivity.switchPlayer();
-
-				Sounder.doSound(context, R.raw.beep);
-				invalidate();
-
-				return true;
-			}
-
-			Sounder.doSound(context, R.raw.wilhelm_scream);
-			return false;
-		}
-
-		return false;
 	}
 
 	// -------Private Methods---------------------------
@@ -423,8 +430,10 @@ public class GameView extends View {
 
 		Options opts = new Options();
 
-		// If dither is true, the decoder will attempt to dither the decoded
-		// image.
+		/**
+		 * If dither is true, the decoder will attempt to dither the decoded
+		 * image.
+		 */
 		opts.inDither = false;
 
 		Resources res = getResources();

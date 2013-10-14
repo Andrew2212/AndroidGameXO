@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hexlet.gamexo.GameActivity;
+import org.hexlet.gamexo.gamefield.Game.GameStateEnum;
 import org.hexlet.gamexo.utils.Logger;
 
 /**
@@ -21,12 +22,6 @@ public class GameFieldController {
 	private boolean isGameOver = false;
 	private List<int[]> listCellWin;// List of cells for drawing lineWin
 
-	public enum GameStateEnum {
-		WIN, DRAW, CONTINUE;
-	}
-
-	private GameStateEnum gameState;
-
 	public GameFieldController(int fieldSize, int numCheckedSigns) {
 
 		this.fieldSize = fieldSize;
@@ -36,14 +31,11 @@ public class GameFieldController {
 		listCellWin = new ArrayList<int[]>();
 
 		// Initialization 'gameState'
-		gameState = GameStateEnum.CONTINUE;
+		Game.setGameState(GameStateEnum.CONTINUE);
 
 		// Get String for the comparison
 		createStringWinnerX();
 		createStringWinnerO();
-
-		// Logger.v("fieldSize = " + this.fieldSize + ", numCheckedSigns = "
-		// + this.numCheckedSigns);
 	}
 
 	public boolean checkGameOver(int cellNumeroX, int cellNumeroY) {
@@ -57,27 +49,28 @@ public class GameFieldController {
 		if (isRowOrColumnCompleted(cellNumeroX, cellNumeroY, playerSign)
 				|| isDiagonalCompleted(cellNumeroX, cellNumeroY, playerSign)) {
 
-			// Logger.v("Gamer ***" + playerSign + "*** is Winner!");
-
 			signWIn = playerSign.charAt(0);
 			countSteps = 0;
 			isGameOver = true;
-			gameState = GameStateEnum.WIN;
 
 			// for (int[] cell : listCellWin) {
 			// Logger.v("Cell coordinate = " + cell[0] + ", " + cell[1]);
 			// }
-
+			Game.setGameState(GameStateEnum.WIN);
+			Game.setIsGameOver(isGameOver);
 			return isGameOver;
 		}
 
 		if (isGameFieldFilled()) {
 			countSteps = 0;
 			isGameOver = true;
-			gameState = GameStateEnum.DRAW;
+			Game.setGameState(GameStateEnum.DRAW);
+			Game.setIsGameOver(isGameOver);
 			return isGameOver;
 		}
 
+		Game.setGameState(GameStateEnum.CONTINUE);
+		Game.setIsGameOver(isGameOver);
 		return isGameOver;
 	}
 
@@ -88,25 +81,10 @@ public class GameFieldController {
 	}
 
 	/**
-	 * @return current game status
-	 */
-	public boolean getIsGameOver() {
-		return isGameOver;
-	}
-
-	/**
 	 * @return List of the win cells for the marking into GameView
 	 */
 	public List<int[]> getListCellWin() {
 		return listCellWin;
-	}
-
-	/**
-	 * 
-	 * @return current 'gameState' (WIN, DRAW, CONTINUE)
-	 */
-	public GameStateEnum getGameState() {
-		return gameState;
 	}
 
 	// ----------------Private Methods------------------
@@ -263,9 +241,8 @@ public class GameFieldController {
 			String playerSign) {
 
 		String cellValue = fetchCellValue(cellNumeroX, cellNumeroY);
-
-		// Logger.v("playerSign = " + playerSign);
-		// Logger.v("cellValue = " + cellValue);
+		// Logger.v("playerSign = " + playerSign + ", cellValue = " +
+		// cellValue);
 
 		if (cellValue.equalsIgnoreCase(playerSign)) {
 			listCellWin.add(new int[] { cellNumeroX, cellNumeroY });

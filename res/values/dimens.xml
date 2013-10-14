@@ -15,6 +15,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <!-- Dimens for java code -->
+    <integer name="delay_bot_message">1200</integer>
     <integer name="line_field_stroke_width">2</integer>
     <integer name="line_win_stroke_width">8</integer>
     <integer name="cell_size_min">48</integer>

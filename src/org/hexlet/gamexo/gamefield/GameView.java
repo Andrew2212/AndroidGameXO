@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hexlet.gamexo.GameActivity;
 import org.hexlet.gamexo.R;
+import org.hexlet.gamexo.gamefield.GameFieldController.GameStateEnum;
 import org.hexlet.gamexo.gamefield.players.IPlayer;
 import org.hexlet.gamexo.utils.Logger;
 import org.hexlet.gamexo.utils.Sounder;
@@ -191,7 +192,9 @@ public class GameView extends View {
 			}
 
 			// Increase count of WIN one of the Players
-			GameActivity.increaseScoreWin();
+			if (gameFieldController.getGameState() == GameStateEnum.WIN) {
+				GameActivity.increaseScoreWin();
+			}
 		}
 
 		// Draws sign within gameField in accordance with GameField::fieldMatrix

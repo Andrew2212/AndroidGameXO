@@ -21,6 +21,12 @@ public class GameFieldController {
 	private boolean isGameOver = false;
 	private List<int[]> listCellWin;// List of cells for drawing lineWin
 
+	public enum GameStateEnum {
+		WIN, DRAW, CONTINUE;
+	}
+
+	private GameStateEnum gameState;
+
 	public GameFieldController(int fieldSize, int numCheckedSigns) {
 
 		this.fieldSize = fieldSize;
@@ -29,33 +35,38 @@ public class GameFieldController {
 		// Instantiation array 'listCellWin'
 		listCellWin = new ArrayList<int[]>();
 
+		// Initialization 'gameState'
+		gameState = GameStateEnum.CONTINUE;
+
 		// Get String for the comparison
 		createStringWinnerX();
 		createStringWinnerO();
 
-//		Logger.v("fieldSize = " + this.fieldSize + ", numCheckedSigns = "
-//				+ this.numCheckedSigns);
+		// Logger.v("fieldSize = " + this.fieldSize + ", numCheckedSigns = "
+		// + this.numCheckedSigns);
 	}
 
 	public boolean checkGameOver(int cellNumeroX, int cellNumeroY) {
 
-//		Logger.v();
-		
+		// Logger.v();
+
 		// 'playerSign' — it's sign that will be set into the cell
-		String playerSign = String.valueOf(GameActivity.getCurrentPlayer().getSignPlayer());
+		String playerSign = String.valueOf(GameActivity.getCurrentPlayer()
+				.getSignPlayer());
 
 		if (isRowOrColumnCompleted(cellNumeroX, cellNumeroY, playerSign)
 				|| isDiagonalCompleted(cellNumeroX, cellNumeroY, playerSign)) {
 
-//			Logger.v("Gamer ***" + playerSign + "*** is Winner!");
+			// Logger.v("Gamer ***" + playerSign + "*** is Winner!");
 
 			signWIn = playerSign.charAt(0);
 			countSteps = 0;
 			isGameOver = true;
+			gameState = GameStateEnum.WIN;
 
-//			for (int[] cell : listCellWin) {
-//				Logger.v("Cell coordinate = " + cell[0] + ", " + cell[1]);
-//			}
+			// for (int[] cell : listCellWin) {
+			// Logger.v("Cell coordinate = " + cell[0] + ", " + cell[1]);
+			// }
 
 			return isGameOver;
 		}
@@ -63,6 +74,7 @@ public class GameFieldController {
 		if (isGameFieldFilled()) {
 			countSteps = 0;
 			isGameOver = true;
+			gameState = GameStateEnum.DRAW;
 			return isGameOver;
 		}
 
@@ -87,6 +99,14 @@ public class GameFieldController {
 	 */
 	public List<int[]> getListCellWin() {
 		return listCellWin;
+	}
+
+	/**
+	 * 
+	 * @return current 'gameState' (WIN, DRAW, CONTINUE)
+	 */
+	public GameStateEnum getGameState() {
+		return gameState;
 	}
 
 	// ----------------Private Methods------------------
@@ -135,7 +155,7 @@ public class GameFieldController {
 
 		if (stringCol.contains(stringWinnerX)
 				|| stringCol.contains(stringWinnerO)) {
-//			Logger.v("listCellWin.size() = " + listCellWin.size());
+			// Logger.v("listCellWin.size() = " + listCellWin.size());
 			return true;
 		} else {
 			listCellWin.clear();
@@ -277,7 +297,7 @@ public class GameFieldController {
 			stringWinnerX += GameField.VALUE_X;
 		}
 
-//		Logger.v(stringWinnerX);
+		// Logger.v(stringWinnerX);
 		return stringWinnerX;
 	}
 
@@ -286,7 +306,7 @@ public class GameFieldController {
 			stringWinnerO += GameField.VALUE_O;
 		}
 
-//		Logger.v(stringWinnerO);
+		// Logger.v(stringWinnerO);
 		return stringWinnerO;
 	}
 

@@ -194,7 +194,7 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 		gameView.requestFocusFromTouch();
 		// ======Try to use Handler==============
 		// Try to get enemy move
-		getNotHumanLocalEnemyMove();
+		getNotHumanLocalEnemyMove();// for if 'bot' has first step
 		// ======Try to use Handler==============
 	}
 
@@ -312,9 +312,9 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 		if (!(currentPlayer instanceof PlayerHumanLocal))
 			handler.sendMessageDelayed(msg, delay);
 	}
+
 	// ================Try to use Handler========================
 
-	
 	private static void showResultOfCompetition(String winnerName) {
 		tvGameResult_winnerName.setText(winnerName);
 		ltGameResult.setVisibility(View.VISIBLE);

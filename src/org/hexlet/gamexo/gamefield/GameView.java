@@ -224,7 +224,6 @@ public class GameView extends View {
 					+ ", resultOnTouch[Y] = " + resultOnTouch[Y]);
 
 			// ***********Human Local players move************************
-			// IPlayer currentPlayer = GameActivity.getCurrentPlayer();
 			Logger.v("currentPlayer = " + currentPlayer);
 			int[] move = currentPlayer.doMove();
 			char signPlayer = currentPlayer.getSignPlayer();
@@ -237,7 +236,6 @@ public class GameView extends View {
 				Logger.v("move[X] = " + move[Y] + ", move[Y] = " + move[Y]);
 				GameActivity.switchPlayer();
 
-				Sounder.doSound(context, R.raw.beep);
 				invalidate();
 				return true;
 			}
@@ -349,8 +347,8 @@ public class GameView extends View {
 		lineWinPaint.setStyle(Style.STROKE);
 
 		// Picture for PlayerHumanLocal's Sign and cellWin
-		bmpSignPlayerX = getResBitmap(R.drawable.lib_cross);
-		bmpSignPlayerO = getResBitmap(R.drawable.lib_circle);
+		bmpSignPlayerX = getResBitmap(R.drawable.sign_x);
+		bmpSignPlayerO = getResBitmap(R.drawable.sign_o);
 		bmpCellWin = getResBitmap(R.drawable.cell_win_background);
 	}
 

@@ -66,11 +66,11 @@
     <string name="pref_user_name_summary">Set your name</string>
     <string name="pref_user_name_title">Your name</string>
     <string name="pref_field_size_key">Field size key</string>
-    <string name="pref_field_size_value">3</string>
+    <string name="pref_field_size_value">7</string>
     <string name="pref_field_size_summary">Set field size</string>
     <string name="pref_field_size_title">Field size</string>
     <string name="pref_num_check_signs_key">Num check signs key</string>
-    <string name="pref_num_check_signs_value">3</string>
+    <string name="pref_num_check_signs_value">5</string>
     <string name="pref_num_check_signs_summary">Set number</string>
     <string name="pref_num_check_signs_title">Number of checked signs</string>
     <string name="pref_win_count_key">Win count key</string>

@@ -225,7 +225,8 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 			currentPlayer = playerUser;
 
 		}
-
+		
+		Sounder.doSound(context, R.raw.beep);
 		countSteps++;
 	}
 

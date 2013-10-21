@@ -13,20 +13,34 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-
-
 
 public class HomeActivity extends FragmentActivity implements OnClickListener {
 
-	TextView tvHiUser;
-	Button btnGameVsHuman;
-	Button btnGameVsBot;
-	Button btnGameRemote;
-	Button btnStatistic;
-	Button btnPrefs;
+	private TextView tvHiUser;
+	private Button btnGameVsHuman;
+	private Button btnGameVsBot;
+	private Button btnGameRemote;
+	private Button btnStatistic;
+	private Button btnPrefs;
 
+	private SharedPreferences prefs;
+	private ImageView ivHomeAnim;
+
+	private class AnimatorTween implements Runnable {
+		public void run() {
+			Animation animationTween = AnimationUtils.loadAnimation(
+					getApplicationContext(), R.anim.home_anim);
+			ivHomeAnim.startAnimation(animationTween);
+			animationTween.setFillAfter(true);
+		}
+	}
+
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,6 +52,13 @@ public class HomeActivity extends FragmentActivity implements OnClickListener {
 		setContentView(R.layout.activity_home);
 
 		init();
+
+		// Animation is been executed
+		if (isSplashScreenAllowed()) {
+			ivHomeAnim.setBackgroundDrawable(getResources().getDrawable(
+					R.drawable.splashscreen));
+			new Thread(new AnimatorTween()).start();
+		}
 
 	}
 
@@ -53,8 +74,8 @@ public class HomeActivity extends FragmentActivity implements OnClickListener {
 
 		Logger.v();
 		Intent intent;
-		String enemy = getResources().getString(R.string.put_extra_enemy);	
-		
+		String enemy = getResources().getString(R.string.put_extra_enemy);
+
 		switch (v.getId()) {
 
 		case R.id.btn_HomeGameVsHuman:
@@ -63,7 +84,7 @@ public class HomeActivity extends FragmentActivity implements OnClickListener {
 			intent.putExtra(enemy, EnumEnemy.HUMAN);
 			startActivity(intent);
 			break;
-			
+
 		case R.id.btn_HomeGameVsBot:
 			Sounder.doSound(this, R.raw.beep_notify);
 			intent = new Intent(this, GameActivity.class);
@@ -94,9 +115,9 @@ public class HomeActivity extends FragmentActivity implements OnClickListener {
 		}
 
 	}
-	
-//	--------Private Methods---------------------
-	
+
+	// --------Private Methods---------------------
+
 	private void init() {
 
 		tvHiUser = (TextView) findViewById(R.id.tv_HomeHiUser);
@@ -106,16 +127,27 @@ public class HomeActivity extends FragmentActivity implements OnClickListener {
 		btnStatistic = (Button) findViewById(R.id.btn_HomeStatistic);
 		btnPrefs = (Button) findViewById(R.id.btn_HomePrefs);
 
+		ivHomeAnim = (ImageView) findViewById(R.id.iv_HomeAnim);
+
 		btnGameVsHuman.setOnClickListener(this);
 		btnGameVsBot.setOnClickListener(this);
 		btnGameRemote.setOnClickListener(this);
 		btnStatistic.setOnClickListener(this);
 		btnPrefs.setOnClickListener(this);
+
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+	}
+
+	private boolean isSplashScreenAllowed() {
+
+		boolean result = prefs
+				.getBoolean(
+						getResources().getString(
+								R.string.pref_splash_screen_key), true);
+		return result;
 	}
 
 	private void setUserName() {
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
 		String userName = prefs.getString(
 				getResources().getString(R.string.pref_user_name_key),
 				getResources().getString(R.string.pref_user_name_value));

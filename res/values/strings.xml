@@ -16,6 +16,7 @@
     <string name="btn_reset">Reset</string>
     <string name="btn_start">Start Game</string>
     <string name="btn_statistic">Statistic</string>
+    <string name="btn_about">About developers</string>
 
     <!-- Toast -->
     <string name="toast_nothing_happens">Nothing happens!</string>
@@ -80,5 +81,8 @@
 
     <!-- Content Descriptions -->
     <string name="descript">Description</string>
+
+    <!-- Lorem Ipsum -->
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent sed risus fringilla, imperdiet lorem elementum, commodo elit. Etiam in semper dolor, non accumsan magna.</string>
 
 </resources>

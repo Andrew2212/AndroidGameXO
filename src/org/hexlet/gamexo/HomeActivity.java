@@ -51,7 +51,9 @@ public class HomeActivity extends FragmentActivity implements OnClickListener {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_home);
 
+		
 		init();
+		Sounder.doSound(this, R.raw.beep_notify);
 
 		// Animation is been executed
 		if (isSplashScreenAllowed()) {
@@ -100,7 +102,7 @@ public class HomeActivity extends FragmentActivity implements OnClickListener {
 
 		case R.id.btn_HomePrefs:
 			Sounder.doSound(this, R.raw.beep);
-			intent = new Intent(this, Preferences.class);
+			intent = new Intent(this, PrefsActivity.class);
 			startActivity(intent);
 			break;
 

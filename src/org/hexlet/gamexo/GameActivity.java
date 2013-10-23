@@ -225,7 +225,7 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 			currentPlayer = playerUser;
 
 		}
-		
+
 		Sounder.doSound(context, R.raw.beep);
 		countSteps++;
 	}
@@ -253,7 +253,11 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 		String numCheckedString = String.valueOf(Game.getNumCheckedSigns());
 		tvInfo_NumChecked.setText(context.getResources().getString(
 				R.string.screen_info_checked_signs)
-				+ " " + numCheckedString);
+				+ " "
+				+ numCheckedString
+				+ " "
+				+ context.getResources().getString(
+						R.string.screen_info_checked_signs_signs));
 
 		isInfoGameInit = true;
 	}
@@ -291,12 +295,12 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 	public static char getSignPlayerUser() {
 		return signPlayerUser;
 	}
-	
+
 	/**
 	 * 
-	 * @return context for 'AI Gardner' getting filePath 
+	 * @return context for 'AI Gardner' getting filePath
 	 */
-	public static Context getContext(){
+	public static Context getContext() {
 		return context;
 	}
 
@@ -463,8 +467,12 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 						context.getResources().getString(
 								R.string.pref_win_count_value));
 		tvInfo_WinCount.setText(context.getResources().getString(
-				R.string.screen_info_win_count)
-				+ " " + winCount);
+				R.string.screen_info_game_to)
+				+ " "
+				+ winCount
+				+ " "
+				+ context.getResources().getString(
+						R.string.screen_info_game_to_wins));
 
 		numCompetitionWin = Integer.valueOf(winCount);
 	}

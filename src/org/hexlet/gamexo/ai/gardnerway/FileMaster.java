@@ -18,7 +18,7 @@ public class FileMaster {
 		// ---------Get 'filePath' for android--------------
 		// String path = "src/org/hexlet/gamexo/ai/gardnerway/bin/" + baseDir;
 		String path = GameActivity.getContext().getFilesDir() + baseDir;
-		Logger.v("path = " + path);
+//		Logger.v("path = " + path);
 
 		File f1 = new File(path);
 		// File f1 = new File("src/org/hexlet/gamexo/ai/gardnerway/bin/" +

@@ -5,6 +5,7 @@ import org.hexlet.gamexo.ai.WayEnum;
 import org.hexlet.gamexo.gamefield.players.IPlayer;
 import org.hexlet.gamexo.gamefield.players.PlayerBot;
 import org.hexlet.gamexo.gamefield.players.PlayerHumanLocal;
+import org.hexlet.gamexo.utils.Logger;
 
 public class Game {
 
@@ -37,8 +38,8 @@ public class Game {
 		// Logger.v("*******Game CONSTRUCTOR*******");
 		// Logger.v("*******Game::wayEnum = " + wayEnum);
 		// Logger.v("*******Game::enumEmemy = " + enumEmemy);
-		// Logger.v("*******Game::fieldSize = " + fieldSize);
-		// Logger.v("*******Game::numCheckedSigns = " + numCheckedSigns);
+		 Logger.v("*******Game::fieldSize = " + fieldSize);
+		 Logger.v("*******Game::numCheckedSigns = " + numCheckedSigns);
 
 		// Create new fieldMatrix and default fill it
 		GameField.initNewFieldMatrix(fieldSize);

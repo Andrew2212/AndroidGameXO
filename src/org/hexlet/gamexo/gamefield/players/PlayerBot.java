@@ -4,6 +4,7 @@ import org.hexlet.gamexo.ai.IBrainAI;
 import org.hexlet.gamexo.ai.IPlayerBot;
 import org.hexlet.gamexo.ai.WayEnum;
 import org.hexlet.gamexo.ai.brutforceway.BrutforceAI;
+import org.hexlet.gamexo.ai.gardnerway.Gardner;
 import org.hexlet.gamexo.gamefield.Game;
 import org.hexlet.gamexo.gamefield.GameField;
 import org.hexlet.gamexo.utils.Logger;
@@ -35,8 +36,8 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 		switch (wayEnum) {
 
 		case GARDNER:
-			// iBrainAI = new Gardner(fieldSize, numChecked);
-			iBrainAI = new BrutforceAI(fieldSize, numChecked);
+			 iBrainAI = new Gardner(fieldSize, numChecked);
+//			iBrainAI = new BrutforceAI(fieldSize, numChecked);
 			break;
 
 		case MINIMAX:

@@ -60,7 +60,7 @@ public class Destructor {
         setWeightInDiagonalCCW(lastEnemyMoveX, lastEnemyMoveY);
 
         //Print value of the 'weightMap'
-//        controlWeightMap();
+        controlWeightMap();
 
         if (weightMap.isEmpty()) {
             setWeightToCellNearLastEnemyMove();
@@ -271,7 +271,6 @@ public class Destructor {
 //                        Copy current fieldMatrix
                         Character[][] testFieldMatrix = BrutforceAI.getCopyFieldMatrix();
 //                        Get coordinates imagined enemyMove and set it into the testFieldMatrix
-                        int[] enemyMove = new int[]{keyCell.getX(), keyCell.getY()};
                         testFieldMatrix[keyCell.getX()][keyCell.getY()] = GameOptions.getSignEnemy();
 //                        Check whether it's DANGER
                         boolean isDanger = checkToWin_1_Danger(listCheckedCell, testFieldMatrix);
@@ -326,7 +325,6 @@ public class Destructor {
 //                        Copy current fieldMatrix
                         Character[][] testFieldMatrix = BrutforceAI.getCopyFieldMatrix();
 //                        Get coordinates imagined enemyMove and set it into the testFieldMatrix
-                        int[] enemyMove = new int[]{keyCell.getX(), keyCell.getY()};
                         testFieldMatrix[keyCell.getX()][keyCell.getY()] = GameOptions.getSignEnemy();
 //                        Check whether it's DANGER
                         boolean isDanger = checkTo_SSS_Danger(listCheckedCell, testFieldMatrix);

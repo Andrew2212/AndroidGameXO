@@ -100,14 +100,14 @@ public class GameFieldController {
 
 	private boolean isRowOrColumnCompleted(int cellNumeroX, int cellNumeroY,
 			String playerSign) {
-		Logger.v();
+
 		return (checkToWinColumns(cellNumeroX, cellNumeroY, playerSign) || checkToWinRows(
 				cellNumeroX, cellNumeroY, playerSign));
 	}
 
 	private boolean isDiagonalCompleted(int cellNumeroX, int cellNumeroY,
 			String playerSign) {
-		Logger.v();
+
 		return (checkToWinDiagonalCW(cellNumeroX, cellNumeroY, playerSign) || checkToWinDiagonalCCW(
 				cellNumeroX, cellNumeroY, playerSign));
 	}
@@ -120,7 +120,7 @@ public class GameFieldController {
 	 */
 	private boolean checkToWinColumns(int cellNumeroX, int cellNumeroY,
 			String playerSign) {
-		Logger.v();
+
 		String stringCol = playerSign;
 		listCellWin.add(new int[] { cellNumeroX, cellNumeroY });
 
@@ -150,7 +150,7 @@ public class GameFieldController {
 	 */
 	private boolean checkToWinRows(int cellNumeroX, int cellNumeroY,
 			String playerSign) {
-		Logger.v();
+
 		String stringRow = playerSign;
 		listCellWin.add(new int[] { cellNumeroX, cellNumeroY });
 
@@ -179,7 +179,7 @@ public class GameFieldController {
 	 */
 	private boolean checkToWinDiagonalCW(int cellNumeroX, int cellNumeroY,
 			String playerSign) {
-		Logger.v();
+
 		String stringDiagonalCW = playerSign;
 		listCellWin.add(new int[] { cellNumeroX, cellNumeroY });
 
@@ -209,7 +209,7 @@ public class GameFieldController {
 	 */
 	private boolean checkToWinDiagonalCCW(int cellNumeroX, int cellNumeroY,
 			String playerSign) {
-		Logger.v();
+
 		String stringDiagonalCCW = playerSign;
 		listCellWin.add(new int[] { cellNumeroX, cellNumeroY });
 

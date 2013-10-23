@@ -291,6 +291,14 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 	public static char getSignPlayerUser() {
 		return signPlayerUser;
 	}
+	
+	/**
+	 * 
+	 * @return context for 'AI Gardner' getting filePath 
+	 */
+	public static Context getContext(){
+		return context;
+	}
 
 	// -------Private Methods----------------------
 

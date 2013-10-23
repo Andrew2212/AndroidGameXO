@@ -8,8 +8,6 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 
-
-
 /**
  * @author Andrew2212
  *         <p>
@@ -30,7 +28,7 @@ public class Sounder {
 	 *            <p>
 	 */
 	public static void doSound(Context context, int id) {
-		Logger.v();
+		// Logger.v();
 		boolean chbSound;
 
 		mp = MediaPlayer.create(context, id);
@@ -40,8 +38,10 @@ public class Sounder {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		// read value from Sound-CheckBox into CheckBoxPreference
-		chbSound = prefs.getBoolean(
-				context.getResources().getString(R.string.pref_sound_key), true);
+		chbSound = prefs
+				.getBoolean(
+						context.getResources().getString(
+								R.string.pref_sound_key), true);
 
 		if (chbSound) {
 			sounderAsyncTask.execute();
@@ -58,11 +58,10 @@ public class Sounder {
 	 */
 	private static class SounderAsyncTask extends AsyncTask<Void, Void, Void> {
 
-
 		@Override
 		protected Void doInBackground(Void... params) {
-			if(mp != null)
-			mp.start();
+			if (mp != null)
+				mp.start();
 
 			return null;
 		}

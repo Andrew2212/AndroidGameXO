@@ -234,9 +234,11 @@ public class GameView extends View {
 
 				Logger.v("currentPlayer = " + currentPlayer);
 				Logger.v("move[X] = " + move[Y] + ", move[Y] = " + move[Y]);
-				GameActivity.switchPlayer();
-
+				
+//				GameActivity.switchPlayer();
 				invalidate();
+				GameActivity.switchPlayer();
+				
 				return true;
 			}
 

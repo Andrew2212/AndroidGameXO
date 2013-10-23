@@ -16,7 +16,6 @@ public class BrutforceAI implements IBrainAI<Object> {
     private static final int X = 0;
     private static final int Y = 1;
     private static Character[][] fieldMatrix;
-//    private Character signBot;
 
     private GetterLastEnemyMove getterLastEnemyMove;
     private Constructor constructor;

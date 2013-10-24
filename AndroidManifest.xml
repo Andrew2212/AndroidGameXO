@@ -27,12 +27,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.hqup.gamexo.Preferences"
-            android:label="@string/app_name"
-            android:parentActivityName="android.preference.PreferenceActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
             android:name="com.hqup.gamexo.GameActivity"
             android:label="@string/app_name"
             android:parentActivityName="android.support.v4.app.FragmentActivity"

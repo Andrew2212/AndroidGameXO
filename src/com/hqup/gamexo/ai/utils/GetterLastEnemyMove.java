@@ -54,7 +54,6 @@ public class GetterLastEnemyMove {
 	}
 
 	public void setMyOwnMove(int moveX, int moveY, char signBot) {
-
 		// checkout for random - it isn't needed for real AI
 		if (isCellValid(moveX, moveY)) {
 			previousFieldMatrix[moveX][moveY] = signBot;

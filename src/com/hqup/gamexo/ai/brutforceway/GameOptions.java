@@ -1,6 +1,7 @@
 package com.hqup.gamexo.ai.brutforceway;
 
 import com.hqup.gamexo.ai.CoreGame;
+import com.hqup.gamexo.ai.utils.LoggerAI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class GameOptions {
     // ---------------------Public Methods-----------------------------
 
     public static void initGameOptions() {
-//        System.out.println("GameOptions::initGameOptions");
+//        LoggerAI.p("GameOptions::initGameOptions");
 
         stringWinnerX = createStringWinner(CoreGame.VALUE_X);
         stringWinnerO = createStringWinner(CoreGame.VALUE_O);
@@ -53,7 +54,7 @@ public class GameOptions {
     }
 
     public static void setSignBotAndSignEnemy(char signBot) {
-//        System.out.println("GameOptions::setSignBotAndSignEnemy::signBot = " + signBot);
+//        LoggerAI.p("GameOptions::setSignBotAndSignEnemy::signBot = " + signBot);
 //        if (String.valueOf(signBot).equalsIgnoreCase(VALUE_X)) {
         if (signBot == CoreGame.VALUE_X) {
             //Bot strings

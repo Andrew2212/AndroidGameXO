@@ -149,8 +149,7 @@ public class Destructor {
 		}
 	}
 
-	// ---------------Check lines and set weight of the
-	// cells-------------------------
+	// -----Check lines and set weight of the cells--------------
 
 	/**
 	 * @param cellX
@@ -281,8 +280,7 @@ public class Destructor {
 		}
 	}
 
-	// -------------------------Setup weight into checked
-	// cell---------------------------------------------------------
+	// ------------Setup weight into checked cell-------------
 
 	/**
 	 * <br>
@@ -477,9 +475,9 @@ public class Destructor {
 	private boolean checkTo_SSS_Danger(List<int[]> listCheckedCell,
 			Character[][] testFieldMatrix) {
 
+		// It's NOT works for field 3x3 and for numCheckedSigns = 3
 		if (CoreGame.getNumCheckedSigns() < 4)
-			return false; // It's NOT works for field 3x3 and for
-							// numCheckedSigns = 3
+			return false;
 
 		int x = 0;
 		int y = 1;
@@ -498,8 +496,7 @@ public class Destructor {
 		return false;
 	}
 
-	// ----------------- Handling cells that are close to
-	// LastEnemyMove------------------------------
+	// ---------- Handling cells that are close to LastEnemyMove-------------
 
 	/**
 	 * @param lastEnemyMoveX
@@ -598,11 +595,10 @@ public class Destructor {
 		return cellValue;
 	}
 
-	// ---------------Methods for test print value =)
-	// -------------------------------
+	// ---------Methods for test print value =) ---------------
 	private void controlListCheckedCells() {
-		System.out
-				.println("listCheckedCell.size() = " + listCheckedCell.size());
+		LoggerAI.p("listCheckedCell.size() = " + listCheckedCell.size());
+
 		for (int i = 0; i < listCheckedCell.size(); i++) {
 			LoggerAI.p(i + " cell[x] = " + listCheckedCell.get(i)[0]
 					+ " cell[y] = " + listCheckedCell.get(i)[1]);

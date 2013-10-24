@@ -119,10 +119,10 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 	}
 
 	// **************CHECK OUT IT!********NOT USED YET!
-	public int[] setCalculatedMove() {
-		int[] move = doMove();
-		GameField.setSignToCell(move[X], move[Y], getSignPlayer());
-		return move;
-	}
+//	public int[] setCalculatedMove() {
+//		int[] move = doMove();
+//		GameField.setSignToCell(move[X], move[Y], getSignPlayer());
+//		return move;
+//	}
 
 }

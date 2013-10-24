@@ -81,7 +81,7 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 	public int[] getCoordinate(IBrainAI iBrainAI, T[][] fieldMatrix, T figure) {
 		Logger.v();
 		position = iBrainAI.findMove(fieldMatrix, figure);
-		System.out.println("PlayerBot::getCoordinate::position[X] = "
+		Logger.v("PlayerBot::getCoordinate::position[X] = "
 				+ position[X] + ", position[Y] = " + position[Y]);
 		return position;
 	}

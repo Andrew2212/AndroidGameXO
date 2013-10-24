@@ -1,9 +1,12 @@
 package org.hexlet.gamexo.ai.gardnerway;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 import org.hexlet.gamexo.GameActivity;
-import org.hexlet.gamexo.utils.Logger;
+import org.hexlet.gamexo.ai.utils.LoggerAI;
 
 /**
  * @author KOlegA Date: 01.10.13 Time: 22:18
@@ -15,18 +18,19 @@ public class FileMaster {
 
 	public FileMaster(String baseDir, String filename) {
 
-		// ---------Get 'filePath' for android--------------
+		// ---------Get 'filePath' for desktop--------------
 		// String path = "src/org/hexlet/gamexo/ai/gardnerway/bin/" + baseDir;
+
+		// ---------Get 'filePath' for android--------------
 		String path = GameActivity.getContext().getFilesDir() + baseDir;
-//		Logger.v("path = " + path);
+
+		// LoggerAI.p("path = " + path);
 
 		File f1 = new File(path);
-		// File f1 = new File("src/org/hexlet/gamexo/ai/gardnerway/bin/" +
-		// baseDir);
 
 		f1.mkdirs();
 		file = new File(f1, filename);
-		// System.out.println(file.getPath());
+		// LoggerAI.p(file.getPath());
 		try {
 			fileWriter = new RandomAccessFile(file, "rw");
 		} catch (FileNotFoundException e) {

@@ -1,6 +1,7 @@
 package org.hexlet.gamexo.ai.brutforceway;
 
 import org.hexlet.gamexo.ai.CoreGame;
+import org.hexlet.gamexo.ai.utils.LoggerAI;
 
 import java.util.*;
 
@@ -163,8 +164,8 @@ public class Constructor {
     private boolean setWeightToNearWin_1() {
 
         for (int j = 0; j < GameOptions.getListStringNearWinBot_1().size(); j++) {
-//            System.out.println("Constructor*** " + j + " strWin_1 = " + GameOptions.listStringNearWinBot_1.get(j));
-//            System.out.println("Constructor*** " + j + " stringResultOfCheck = " + stringResultOfCheck);
+//            LoggerAI.p("Constructor*** " + j + " strWin_1 = " + GameOptions.listStringNearWinBot_1.get(j));
+//            LoggerAI.p("Constructor*** " + j + " stringResultOfCheck = " + stringResultOfCheck);
 
 // Check condition 'contains' for each string from 'listStringNearWinBot_1'
             if (stringResultOfCheck.contains(GameOptions.getListStringNearWinBot_1().get(j))) {
@@ -207,10 +208,10 @@ public class Constructor {
 
             resultOfCheck += testFieldMatrix[listCheckedCell.get(i)[X]][listCheckedCell.get(i)[Y]];
         }
-//        System.out.println("Constructor::checkToWin::resultOfCheck = " + resultOfCheck);
+//        LoggerAI.p("Constructor::checkToWin::resultOfCheck = " + resultOfCheck);
         if (resultOfCheck.contains(GameOptions.getStringWinnerBot())) {
             moveWin = move;
-//            System.out.println("Constructor::checkToWin::moveWin[X] = " + moveWin[X] + " moveWin[Y] = " + moveWin[Y]);
+//            LoggerAI.p("Constructor::checkToWin::moveWin[X] = " + moveWin[X] + " moveWin[Y] = " + moveWin[Y]);
             return true;
         }
         return false;
@@ -227,7 +228,7 @@ public class Constructor {
     private void writeCheckedValue(int x, int y) {
         stringResultOfCheck = stringResultOfCheck + fetchCellValue(x, y);
         if (CoreGame.isValueValid(x, y)) {
-//                System.out.println("writeCheckedValue::listCheckedCell.add(cell_)::cell_[x] = " + x + " cell_[y] = " + y);
+//                LoggerAI.p("writeCheckedValue::listCheckedCell.add(cell_)::cell_[x] = " + x + " cell_[y] = " + y);
             listCheckedCell.add(new int[]{x, y});
         }
     }
@@ -241,7 +242,7 @@ public class Constructor {
     private void writeCheckedValueInverse(int x, int y) {
         stringResultOfCheck = fetchCellValue(x, y) + stringResultOfCheck;
         if (CoreGame.isValueValid(x, y)) {
-//                System.out.println("-  listCheckedCell.addInverse(cell_)::cell_[x] = " + x + " cell_[y] = " + y);
+//                LoggerAI.p("-  listCheckedCell.addInverse(cell_)::cell_[x] = " + x + " cell_[y] = " + y);
             listCheckedCell.add(0, new int[]{x, y});
         }
     }

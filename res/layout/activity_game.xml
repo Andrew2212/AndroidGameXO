@@ -195,7 +195,7 @@
             android:paddingTop="@dimen/activity_vertical_margin"
             android:visibility="visible" >
 
-            <org.hexlet.gamexo.gamefield.GameView
+            <com.hqup.gamexo.gamefield.GameView
                 android:id="@+id/game_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

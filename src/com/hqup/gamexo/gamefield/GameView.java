@@ -233,7 +233,7 @@ public class GameView extends View {
 			if (currentPlayer.setMove(move[X], move[Y], signPlayer)) {
 
 				Logger.v("currentPlayer = " + currentPlayer);
-				Logger.v("move[X] = " + move[Y] + ", move[Y] = " + move[Y]);
+				Logger.v("move[X] = " + move[X] + ", move[Y] = " + move[Y]);
 				
 //				GameActivity.switchPlayer();
 				invalidate();

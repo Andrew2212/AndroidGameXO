@@ -19,4 +19,6 @@ public interface IPlayer {
 	boolean setMove(int cellX, int cellY, char signPlayer);
 
 	char getSignPlayer();
+	
+	void killBrain();
 }

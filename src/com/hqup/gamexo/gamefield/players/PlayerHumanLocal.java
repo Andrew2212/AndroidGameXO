@@ -10,6 +10,7 @@ public class PlayerHumanLocal implements IPlayer {
 
 	public PlayerHumanLocal(char signPlayer) {
 		this.signPlayer = signPlayer;
+		Logger.v("CONSTRUCTOR");
 	}
 
 	@Override
@@ -26,6 +27,11 @@ public class PlayerHumanLocal implements IPlayer {
 
 	public char getSignPlayer() {
 		return signPlayer;
+	}
+
+	@Override
+	public void killBrain() {
+		// TODO Auto-generated method stub		
 	}
 
 }

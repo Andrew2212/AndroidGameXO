@@ -5,16 +5,18 @@ import com.hqup.gamexo.ai.IPlayerBot;
 import com.hqup.gamexo.ai.WayEnum;
 import com.hqup.gamexo.ai.brutforceway.BrutforceAI;
 import com.hqup.gamexo.ai.gardnerway.Gardner;
+import com.hqup.gamexo.ai.utils.LoggerAI;
 import com.hqup.gamexo.gamefield.Game;
 import com.hqup.gamexo.gamefield.GameField;
 import com.hqup.gamexo.utils.Logger;
 
 import android.os.Bundle;
 import android.os.Message;
+
 /**
  * 
  * @author Andrew2212
- *
+ * 
  * @param <T>
  */
 public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
@@ -29,15 +31,33 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 	private WayEnum wayEnum;
 	private char signPlayer;
 
+	private int fieldSize;
+	private int numChecked;
+
+	/**
+	 * testing counter
+	 */
+	private int counter = 0;
+
 	public PlayerBot(int fieldSize, int numChecked, char signPlayer) {
 		this.signPlayer = signPlayer;
-		wayEnum = Game.getWayEnum();
+		this.fieldSize = fieldSize;
+		this.numChecked = numChecked;
 
+		counter++;
+		wayEnum = Game.getWayEnum();
+		iBrainAI = createBrain(wayEnum);
+
+		LoggerAI.p("PlayerBot::CONSTRUCTOR::counter = " + counter
+				+ " wayEnum = " + wayEnum);
+	}
+
+	private IBrainAI<?> createBrain(WayEnum wayEnum) {
 		switch (wayEnum) {
 
 		case GARDNER:
-			 iBrainAI = new Gardner(fieldSize, numChecked);
-//			iBrainAI = new BrutforceAI(fieldSize, numChecked);
+			iBrainAI = new Gardner(fieldSize, numChecked);
+			// iBrainAI = new BrutforceAI(fieldSize, numChecked);
 			break;
 
 		case MINIMAX:
@@ -61,12 +81,16 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 		default:
 			break;
 		}
+
+		return iBrainAI;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public int[] doMove() {
 		Logger.v();
+		LoggerAI.p("PlayerBot::doMove()::counter = " + counter);
+		counter++;
 		do {
 			position = getCoordinate(iBrainAI,
 					(T[][]) GameField.getFieldMatrix(),
@@ -79,10 +103,14 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public int[] getCoordinate(IBrainAI iBrainAI, T[][] fieldMatrix, T figure) {
-		Logger.v();
+		Logger.v("fieldMatrix.length = " + fieldMatrix.length + " figure = "
+				+ figure);
+		if (iBrainAI == null)
+			return null;
+		Logger.v("iBrain = " + iBrainAI.toString());
 		position = iBrainAI.findMove(fieldMatrix, figure);
-		Logger.v("PlayerBot::getCoordinate::position[X] = "
-				+ position[X] + ", position[Y] = " + position[Y]);
+		Logger.v("PlayerBot::getCoordinate::position[X] = " + position[X]
+				+ ", position[Y] = " + position[Y]);
 		return position;
 	}
 
@@ -97,6 +125,10 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 		return signPlayer;
 	}
 
+	public IBrainAI<?> getBrain() {
+		return iBrainAI;
+	}
+
 	/**
 	 * 
 	 * @return message that contains 'int[] move'
@@ -105,6 +137,7 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 		Logger.v();
 		// PlayerBot by 'doMove()' returns 'the best AI move'
 		int[] move = doMove();
+		LoggerAI.p("***move[X] = " + move[X] + " move[Y] = " + move[Y]);
 		Bundle msgData = new Bundle();
 		msgData.putIntArray(KEY_MOVE, move);
 		msgData.putInt(KEY_X, move[X]);
@@ -118,11 +151,17 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 		return message;
 	}
 
+	@Override
+	public void killBrain() {
+		iBrainAI = null;
+
+	}
+
 	// **************CHECK OUT IT!********NOT USED YET!
-//	public int[] setCalculatedMove() {
-//		int[] move = doMove();
-//		GameField.setSignToCell(move[X], move[Y], getSignPlayer());
-//		return move;
-//	}
+	// public int[] setCalculatedMove() {
+	// int[] move = doMove();
+	// GameField.setSignToCell(move[X], move[Y], getSignPlayer());
+	// return move;
+	// }
 
 }

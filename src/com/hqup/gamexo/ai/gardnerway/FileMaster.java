@@ -27,10 +27,12 @@ public class FileMaster {
 		// LoggerAI.p("path = " + path);
 
 		File f1 = new File(path);
+//		File f1 = GameActivity.getContext().getExternalFilesDir(filename);
 
 		f1.mkdirs();
 		file = new File(f1, filename);
-		// LoggerAI.p(file.getPath());
+		 LoggerAI.p(file.getPath());
+		 
 		try {
 			fileWriter = new RandomAccessFile(file, "rw");
 		} catch (FileNotFoundException e) {
@@ -56,7 +58,11 @@ public class FileMaster {
 	public String readFile() {
 
 		try {
-			return fileWriter.readLine();
+			String result = fileWriter.readLine();
+			LoggerAI.p("readFile = " + result);
+//			return fileWriter.readLine();
+			return result;
+			
 		} catch (IOException e) {
 			System.out.println("Read File error");
 		}

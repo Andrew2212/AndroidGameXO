@@ -45,7 +45,7 @@ public class Destructor {
 	private ArrayList<int[]> listCellsNearLastEnemyMove = new ArrayList<int[]>();
 
 	public Destructor() {
-
+		LoggerAI.p("Destructor::CONSTRUCTOR");
 		NEAR_WIN_ENEMY_1 = CoreGame.getNumCheckedSigns() * 10;
 		NEAR_WIN_ENEMY_1_DANGER = CoreGame.getNumCheckedSigns() * 20;
 		NEAR_WIN_ENEMY_2 = CoreGame.getNumCheckedSigns() * 2;
@@ -63,6 +63,9 @@ public class Destructor {
 	 *            draft
 	 */
 	public int[] getDestructiveMove(int lastEnemyMoveX, int lastEnemyMoveY) {
+
+		LoggerAI.p("Destructor::getDestructiveMove()::lastEnemyMoveX = "
+				+ lastEnemyMoveX + " lastEnemyMoveY = " + lastEnemyMoveY);
 
 		findCellsNearLastEnemyMove(lastEnemyMoveX, lastEnemyMoveY);
 		setWeightInRow(lastEnemyMoveX, lastEnemyMoveY);
@@ -592,6 +595,10 @@ public class Destructor {
 		if (CoreGame.isValueValid(cellX, cellY)) {
 			cellValue += BrutforceAI.getCopyFieldMatrix()[cellX][cellY];
 		}
+
+//		LoggerAI.p("Destructor::fetchCellValue()::cellX = " + cellX
+//				+ " cellY = " + cellY + "cellValue = " + cellValue);
+
 		return cellValue;
 	}
 
@@ -606,6 +613,10 @@ public class Destructor {
 	}
 
 	private void controlWeightMap() {
+
+		LoggerAI.p("Destructor::controlWeightMap::weightMap.size() = "
+				+ weightMap.size());
+
 		Iterator iterator = weightMap.keySet().iterator();
 		while (iterator.hasNext()) {
 			KeyCell keyCell = (KeyCell) iterator.next();

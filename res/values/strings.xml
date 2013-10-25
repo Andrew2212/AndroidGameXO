@@ -34,7 +34,7 @@
     <string name="screen_level_difficulty">Level of difficulty</string>
     <string name="screen_level">Level:</string>
     <string name="screen_easy">B-Force</string>
-    <string name="screen_middle">Minimax</string>
+    <string name="screen_middle">M-Max</string>
     <string name="screen_hard">Gardner</string>
     <string name="screen_connection_mode">Connection mode:</string>
     <string name="screen_bluetooth">Bluetooth</string>

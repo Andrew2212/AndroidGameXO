@@ -20,6 +20,7 @@ public class GameField {
 		Logger.v("GameField::initNewFieldMatrix()::fieldSize = " + fieldSize);
 
 		GameField.fieldSize = fieldSize;
+		fieldMatrix = null;
 		fieldMatrix = new Character[fieldSize][fieldSize];
 		fillDefaultGameMatrix();
 
@@ -59,6 +60,10 @@ public class GameField {
 			}
 		}
 		return fieldMatrixCopy;
+	}
+
+	public static void killFieldMatrix() {
+		fieldMatrix = null;
 	}
 
 	public static Character getCellValue(int cellNumeroX, int cellNumeroY) {

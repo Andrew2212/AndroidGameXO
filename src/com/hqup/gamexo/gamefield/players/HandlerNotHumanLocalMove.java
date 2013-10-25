@@ -48,10 +48,10 @@ public class HandlerNotHumanLocalMove extends Handler {
 		int[] data = (int[]) msg.getData().getIntArray(PlayerBot.KEY_MOVE);
 		// Set 'the best AI move' into fieldMatrix
 		currentPlayer.setMove(data[0], data[1], currentPlayer.getSignPlayer());
-		// Refresh GameView
-		gameView.invalidate();
 		// Switch Players
 		GameActivity.switchPlayer();
+		// Refresh GameView
+		gameView.invalidate();
 	}
 
 	private void handleMessageBluetooth(Message msg) {

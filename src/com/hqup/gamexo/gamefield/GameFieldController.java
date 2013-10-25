@@ -23,7 +23,7 @@ public class GameFieldController {
 	private List<int[]> listCellWin;// List of cells for drawing lineWin
 
 	public GameFieldController(int fieldSize, int numCheckedSigns) {
-
+		Logger.v("CONSTRUCTOR");
 		this.fieldSize = fieldSize;
 		this.numCheckedSigns = numCheckedSigns;
 
@@ -32,6 +32,7 @@ public class GameFieldController {
 
 		// Initialization 'gameState'
 		Game.setGameState(GameStateEnum.CONTINUE);
+		Game.setIsGameOver(isGameOver);
 
 		// Get String for the comparison
 		createStringWinnerX();
@@ -58,19 +59,26 @@ public class GameFieldController {
 			// }
 			Game.setGameState(GameStateEnum.WIN);
 			Game.setIsGameOver(isGameOver);
+			// Game.removePlayers();
+
 			return isGameOver;
 		}
 
 		if (isGameFieldFilled()) {
 			countSteps = 0;
 			isGameOver = true;
+
 			Game.setGameState(GameStateEnum.DRAW);
 			Game.setIsGameOver(isGameOver);
+			// Game.removePlayers();
+
 			return isGameOver;
 		}
 
 		Game.setGameState(GameStateEnum.CONTINUE);
 		Game.setIsGameOver(isGameOver);
+		// Game.removePlayers();
+
 		return isGameOver;
 	}
 

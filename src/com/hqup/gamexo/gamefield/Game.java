@@ -2,6 +2,7 @@ package com.hqup.gamexo.gamefield;
 
 import com.hqup.gamexo.GameActivity;
 import com.hqup.gamexo.ai.WayEnum;
+import com.hqup.gamexo.ai.utils.LoggerAI;
 import com.hqup.gamexo.gamefield.players.IPlayer;
 import com.hqup.gamexo.gamefield.players.PlayerBot;
 import com.hqup.gamexo.gamefield.players.PlayerHumanLocal;
@@ -17,19 +18,25 @@ public class Game {
 	private static GameFieldController gameFieldController;
 	private static boolean isGameOver;
 
-	private IPlayer playerUser;
-	private IPlayer playerEnemy;
-	
+	private static IPlayer playerUser;
+	private static IPlayer playerEnemy;
+
 	private char signPlayerUser;
 	private char signPlayerEnemy;
 	private static GameStateEnum gameState;
-	
+
+	/**
+	 * testing counter
+	 */
+	private static int counter = 0;
+
 	public enum GameStateEnum {
 		WIN, DRAW, CONTINUE;
 	}
 
 	public Game(EnumEnemy enumEmemy, WayEnum wayEnum) {
-
+		Logger.v("Game::CONSTRUCTOR::counter = " + counter);
+		counter++;
 		Game.enumEmemy = enumEmemy;
 		Game.wayEnum = wayEnum;
 		Game.fieldSize = GameView.getFieldSizeCalculated();
@@ -38,8 +45,8 @@ public class Game {
 		// Logger.v("*******Game CONSTRUCTOR*******");
 		// Logger.v("*******Game::wayEnum = " + wayEnum);
 		// Logger.v("*******Game::enumEmemy = " + enumEmemy);
-		 Logger.v("*******Game::fieldSize = " + fieldSize);
-		 Logger.v("*******Game::numCheckedSigns = " + numCheckedSigns);
+		Logger.v("*******Game::fieldSize = " + fieldSize);
+		Logger.v("*******Game::numCheckedSigns = " + numCheckedSigns);
 
 		// Create new fieldMatrix and default fill it
 		GameField.initNewFieldMatrix(fieldSize);
@@ -49,47 +56,62 @@ public class Game {
 				numCheckedSigns);
 
 		// Create playerUser (local human)
+		playerUser = null;
 		signPlayerUser = GameActivity.getSignPlayerUser();
 		playerUser = new PlayerHumanLocal(signPlayerUser);
 
 		// Create playerEnemy
+		playerEnemy = null;
 		signPlayerEnemy = specifySignPlayerEnemy(signPlayerUser);
-		chooseAndInitEnemy(signPlayerEnemy);
-		
+		playerEnemy = chooseAndInitEnemy(signPlayerEnemy);
+
 		isGameOver = false;
 	}
-	
+
+	/**
+	 * It's called into GameActivity after event 'GameOver' or within
+	 * 'onResume()'
+	 */
+//	public static void killGame() {
+//if(0 < counter){
+//		playerUser = null;
+//		playerEnemy.killBrain();
+//		playerEnemy = null;
+//		gameFieldController = null;
+//		GameField.killFieldMatrix();}
+//
+//	}
 
 	public static GameStateEnum getGameState() {
 		return gameState;
 	}
 
-
 	public static void setGameState(GameStateEnum gameState) {
 		Game.gameState = gameState;
 	}
 
-
 	public static GameFieldController getGameFieldController() {
 		return gameFieldController;
 	}
-	
-	public static void setIsGameOver(boolean isGameOver){
+
+	public static void setIsGameOver(boolean isGameOver) {
 		Game.isGameOver = isGameOver;
 	}
-	
-	public static boolean getIsGameOver(){
+
+	public static boolean getIsGameOver() {
 		return isGameOver;
 	}
-	
-	private char specifySignPlayerEnemy(char signPlayerUser){
-		if(signPlayerUser == GameField.VALUE_X){
+
+	private char specifySignPlayerEnemy(char signPlayerUser) {
+		if (signPlayerUser == GameField.VALUE_X) {
 			return GameField.VALUE_O;
 		}
 		return GameField.VALUE_X;
 	}
 
-	private <T> void chooseAndInitEnemy(char signPlayerEnemy) {
+	private <T> IPlayer chooseAndInitEnemy(char signPlayerEnemy) {
+
+		Logger.v("Game::chooseAndInitEnemy()::counter = " + counter);
 
 		switch (enumEmemy) {
 		case HUMAN:
@@ -97,7 +119,8 @@ public class Game {
 			break;
 
 		case BOT:
-			playerEnemy = new PlayerBot<T>(fieldSize, numCheckedSigns, signPlayerEnemy);
+			playerEnemy = new PlayerBot<T>(fieldSize, numCheckedSigns,
+					signPlayerEnemy);
 			break;
 
 		case REMOTE:
@@ -115,6 +138,8 @@ public class Game {
 		default:
 			break;
 		}
+
+		return playerEnemy;
 	}
 
 	// ------------Getters and Setters--------------
@@ -168,4 +193,3 @@ public class Game {
 	}
 
 }
-

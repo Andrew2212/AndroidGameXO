@@ -41,8 +41,6 @@ public class GameFieldController {
 
 	public boolean checkGameOver(int cellNumeroX, int cellNumeroY) {
 
-		// Logger.v();
-
 		// 'playerSign' — it's sign that will be set into the cell
 		String playerSign = String.valueOf(GameActivity.getCurrentPlayer()
 				.getSignPlayer());
@@ -59,7 +57,6 @@ public class GameFieldController {
 			// }
 			Game.setGameState(GameStateEnum.WIN);
 			Game.setIsGameOver(isGameOver);
-			// Game.removePlayers();
 
 			return isGameOver;
 		}
@@ -70,14 +67,12 @@ public class GameFieldController {
 
 			Game.setGameState(GameStateEnum.DRAW);
 			Game.setIsGameOver(isGameOver);
-			// Game.removePlayers();
 
 			return isGameOver;
 		}
 
 		Game.setGameState(GameStateEnum.CONTINUE);
 		Game.setIsGameOver(isGameOver);
-		// Game.removePlayers();
 
 		return isGameOver;
 	}

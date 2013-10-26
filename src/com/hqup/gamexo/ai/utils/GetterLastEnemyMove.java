@@ -25,7 +25,8 @@ public class GetterLastEnemyMove {
 	}
 
 	public int[] getLastEnemyMove(Character[][] fieldMatrix) {
-		// LoggerAI.p("Getter::getLastEnemyField()");
+		LoggerAI.p("GetterLastEnemyMove::getLastEnemyMove()::");
+
 		for (int i = 0; i < fieldSize; i++) {
 			for (int j = 0; j < fieldSize; j++) {
 
@@ -36,12 +37,12 @@ public class GetterLastEnemyMove {
 					MOVE[X] = i;
 					MOVE[Y] = j;
 
-					 LoggerAI.p("previousFieldMatrix[" + i + "][" + j + "] = "
-					 + previousFieldMatrix[i][j]);
-					 LoggerAI.p("fieldMatrix[" + i + "][" + j + "] = " +
-					 fieldMatrix[i][j]);
-					LoggerAI.p("GetterLastEnemyMove::getLastEnemyMove():: MOVE[X] = " + MOVE[X]
-							+ ", MOVE[Y] = " + MOVE[Y]);
+					LoggerAI.p("previousFieldMatrix[" + i + "][" + j + "] = "
+							+ previousFieldMatrix[i][j]);
+					LoggerAI.p("fieldMatrix[" + i + "][" + j + "] = "
+							+ fieldMatrix[i][j]);
+					LoggerAI.p("GetterLastEnemyMove::getLastEnemyMove():: MOVE[X] = "
+							+ MOVE[X] + ", MOVE[Y] = " + MOVE[Y]);
 
 					previousFieldMatrix[i][j] = fieldMatrix[i][j];
 					return MOVE;
@@ -55,8 +56,11 @@ public class GetterLastEnemyMove {
 
 	public void setMyOwnMove(int moveX, int moveY, char signBot) {
 		// checkout for random - it isn't needed for real AI
+		LoggerAI.p("GetterLastEnemyMove::1::setMyOwnMove::move = " + moveX
+				+ ", " + moveY);
 		if (isCellValid(moveX, moveY)) {
-			LoggerAI.p("GetterLastEnemyMove::setMyOwnMove");
+			LoggerAI.p("GetterLastEnemyMove::setMyOwnMove::move = " + moveX
+					+ ", " + moveY);
 			previousFieldMatrix[moveX][moveY] = signBot;
 		}
 
@@ -79,12 +83,15 @@ public class GetterLastEnemyMove {
 	private boolean isCellValid(int x, int y) {
 
 		if (!CoreGame.isValueValid(x, y)) {
+
 			return false;
 		}
 
 		if (previousFieldMatrix[x][y].equals(CoreGame.DEFAULT_CELL_VALUE)) {
 			return true;
 		}
+		LoggerAI.p("GetterLastEnemyMove::::isCellValid()::previousFieldMatrix[x][y] =  "
+				+ previousFieldMatrix[x][y]);
 		return false;
 	}
 

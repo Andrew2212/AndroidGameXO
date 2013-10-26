@@ -16,7 +16,7 @@ import com.hqup.gamexo.ai.utils.LoggerAI;
  * доска ,при проверке, поворачивается, зеркалится и снова поворачивается. Этим
  * достигается проверка всех перевернутых и зеркальных вариантов.
  */
-public class Gardner implements IBrainAI {
+public class Gardner implements IBrainAI<Object> {
 
 	private WriterComparator writerComparator;
 	private GameStatusChecker checker;
@@ -92,17 +92,14 @@ public class Gardner implements IBrainAI {
 		counter++;
 		LoggerAI.p("findMove::counter = " + counter);
 		LoggerAI.p("Gardner::findMove()::1::firstMove = " + firstMove);
-		FieldMatrixConverter converter = new FieldMatrixConverter();
-		LoggerAI.p("Gardner::findMove()::2::firstMove = " + firstMove);
+		
+		FieldMatrixConverter<Object> converter = new FieldMatrixConverter<Object>();
 		Character[][] fieldMatrixCharacter = converter
 				.convertFieldMatrixToCharacter(fieldMatrixObject);
-		LoggerAI.p("Gardner::findMove()::3::firstMove = " + firstMove);
 		char[][] fieldMatrix = CoordinateConverter
 				.characterToChar(fieldMatrixCharacter);
-		LoggerAI.p("Gardner::findMove()::4::firstMove = " + firstMove);
 		int[] enemyMove = getLastMove(fieldMatrix); // возвращаем координаты
 													// хода противника
-		LoggerAI.p("Gardner::findMove()::5::firstMove = " + firstMove);
 		return findMove(enemyMove[X], enemyMove[Y]);
 	}
 

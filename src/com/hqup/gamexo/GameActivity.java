@@ -1,20 +1,5 @@
 package com.hqup.gamexo;
 
-import com.hqup.gamexo.R;
-
-import com.hqup.gamexo.ai.WayEnum;
-import com.hqup.gamexo.gamefield.EnumEnemy;
-import com.hqup.gamexo.gamefield.Game;
-import com.hqup.gamexo.gamefield.GameField;
-import com.hqup.gamexo.gamefield.GameFieldController;
-import com.hqup.gamexo.gamefield.GameView;
-import com.hqup.gamexo.gamefield.players.HandlerNotHumanLocalMove;
-import com.hqup.gamexo.gamefield.players.IPlayer;
-import com.hqup.gamexo.gamefield.players.PlayerBot;
-import com.hqup.gamexo.gamefield.players.PlayerHumanLocal;
-import com.hqup.gamexo.utils.Logger;
-import com.hqup.gamexo.utils.Sounder;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,6 +15,18 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.hqup.gamexo.ai.WayEnum;
+import com.hqup.gamexo.gamefield.EnumEnemy;
+import com.hqup.gamexo.gamefield.Game;
+import com.hqup.gamexo.gamefield.GameField;
+import com.hqup.gamexo.gamefield.GameView;
+import com.hqup.gamexo.gamefield.players.HandlerNotHumanLocalMove;
+import com.hqup.gamexo.gamefield.players.IPlayer;
+import com.hqup.gamexo.gamefield.players.PlayerBot;
+import com.hqup.gamexo.gamefield.players.PlayerHumanLocal;
+import com.hqup.gamexo.utils.Logger;
+import com.hqup.gamexo.utils.Sounder;
 
 /**
  * @author Andrew2212
@@ -60,10 +57,15 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 	private static int scoreUser = 0;
 	private static int scoreEnemy = 0;
 
+	private static TextView tvDifficult;
+	private TextView tvMode;
+
+	private Button btnReset;
+	private Button btnStart;
+
 	private static int numCompetitionWin; // 'winCount' from Preferences
 	private static boolean isCompetitioinOver = false;
 
-	// *******************Added***********************
 	private static IPlayer playerUser;
 	private static IPlayer playerEnemy;
 	private static IPlayer currentPlayer;
@@ -73,12 +75,6 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 	private static Game game;
 	private static GameView gameView;
 	public static HandlerNotHumanLocalMove handler;
-	// ********************************************
-	private static TextView tvDifficult;
-	private TextView tvMode;
-
-	private Button btnReset;
-	private Button btnStart;
 
 	private static int countSteps = 0;
 	private static String strDifficult;
@@ -126,9 +122,6 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 		countSteps = 0;
 		scoreUser = 0;
 		scoreEnemy = 0;
-
-		// Game.killGame();
-		// game = null;
 	}
 
 	@Override
@@ -147,12 +140,13 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 				finish();
 				startActivity(intent);
 			} else {
+				Game.killGame();
 				// Start 'new Game()'
 				initNewGame();
 			}
 			Logger.v("currentPlayer = " + currentPlayer);
 			// Try to get enemy move
-			getNotHumanLocalEnemyMove();// for if 'bot' has first step
+			getNotHumanLocalEnemyMove();// if 'bot' has first step
 
 			break;
 
@@ -174,10 +168,6 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 			currentPlayer = playerUser;
 			Logger.v("currentPlayer = " + currentPlayer);
 
-			// // ======Try to use Handler==============
-			// initHandler();
-			// // ======Try to use Handler==============
-
 			// Try to get enemy move
 			getNotHumanLocalEnemyMove();// for if 'bot' has first step
 			break;
@@ -192,15 +182,11 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 	 * Initialization 'newGame'
 	 */
 	private static void initNewGame() {
-		// Kill previous game
-		// Game.killGame();
-		game = null;
+
 		// Difficult (kind) of playerBot brain
 		getDifficulty();
 		// Start 'new Game()'
 		game = new Game(enemy, wayEnum);
-		playerUser = null;
-		playerEnemy = null;
 		playerUser = game.getPlayerUser();
 		playerEnemy = game.getPlayerEnemy();
 		// Set controller into GameView
@@ -209,36 +195,8 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 		gameView.invalidate();
 		// Request focus on GameView
 		gameView.requestFocusFromTouch();
-
-		// ======Try to use Handler==============
-		handler = null;
+		// Try to use Handler
 		initHandler();
-		// // Try to get enemy move
-		// getNotHumanLocalEnemyMove();// for if 'bot' has first step
-		// ======Try to use Handler==============
-	}
-
-	private static void getNotHumanLocalEnemyMove() {
-
-		Logger.v("currentPlayer = " + currentPlayer);
-		if (currentPlayer instanceof PlayerHumanLocal)
-			return;
-		if (Game.getIsGameOver() || currentPlayer == null)
-			return;
-
-		Logger.v("getNotHumanLocalEnemyMove():: "
-				+ playerEnemy.getClass().getSimpleName());
-
-		@SuppressWarnings("rawtypes")
-		Message msg = ((PlayerBot) currentPlayer).obtainMessage();
-		int delay = context.getResources().getInteger(
-				R.integer.delay_bot_message);
-		if (!(currentPlayer instanceof PlayerHumanLocal))
-			handler.sendMessageDelayed(msg, delay);
-	}
-
-	public static IPlayer getCurrentPlayer() {
-		return currentPlayer;
 	}
 
 	/**
@@ -256,9 +214,10 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 			tvEnemyName.setTextColor(green);
 			currentPlayer = playerEnemy;
 
-			if (!(Game.getIsGameOver()))
-				Logger.v("*********************************");
-			getNotHumanLocalEnemyMove();
+			if (!(Game.getIsGameOver())) {
+				Logger.v("*******GameOver**********");
+				getNotHumanLocalEnemyMove();
+			}
 
 		} else {
 			tvUserName.setTextColor(green);
@@ -345,31 +304,39 @@ public class GameActivity extends FragmentActivity implements OnClickListener {
 		return context;
 	}
 
+	public static IPlayer getCurrentPlayer() {
+		return currentPlayer;
+	}
+
 	// -------Private Methods----------------------
 
-	// ================Try to use Handler========================
+	// ===========Try to use Handler==========
 	private static void initHandler() {
 		handler = new HandlerNotHumanLocalMove(context, gameView, playerEnemy);
 	}
 
-	// private static void getNotHumanLocalEnemyMove() {
-	// // Logger.v("currentPlayer = " + currentPlayer);
-	// if (currentPlayer instanceof PlayerHumanLocal)
-	// return;
-	// if (Game.getIsGameOver() || currentPlayer == null)
-	// return;
-	//
-	// Logger.v(playerEnemy.toString());
-	//
-	// @SuppressWarnings("rawtypes")
-	// Message msg = ((PlayerBot) currentPlayer).obtainMessage();
-	// int delay = context.getResources().getInteger(
-	// R.integer.delay_bot_message);
-	// if (!(currentPlayer instanceof PlayerHumanLocal))
-	// handler.sendMessageDelayed(msg, delay);
-	// }
+	private static void getNotHumanLocalEnemyMove() {
 
-	// ================Try to use Handler========================
+		Logger.v("currentPlayer = " + currentPlayer);
+		if (currentPlayer instanceof PlayerHumanLocal)
+			return;
+		if (Game.getIsGameOver() || currentPlayer == null)
+			return;
+
+		Logger.v("getNotHumanLocalEnemyMove():: "
+				+ playerEnemy.getClass().getSimpleName());
+		Logger.v("getNotHumanLocalEnemyMove():: "
+				+ playerEnemy.getIBrain().getClass().getSimpleName());
+
+		@SuppressWarnings("rawtypes")
+		Message msg = ((PlayerBot) currentPlayer).obtainMessage();
+		int delay = context.getResources().getInteger(
+				R.integer.delay_bot_message);
+		if (!(currentPlayer instanceof PlayerHumanLocal))
+			handler.sendMessageDelayed(msg, delay);
+	}
+
+	// ===========Try to use Handler==========
 
 	private static void showResultOfCompetition(String winnerName) {
 		tvGameResult_winnerName.setText(winnerName);

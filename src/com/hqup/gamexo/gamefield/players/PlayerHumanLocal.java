@@ -1,5 +1,6 @@
 package com.hqup.gamexo.gamefield.players;
 
+import com.hqup.gamexo.ai.IBrainAI;
 import com.hqup.gamexo.gamefield.GameField;
 import com.hqup.gamexo.gamefield.GameView;
 import com.hqup.gamexo.utils.Logger;
@@ -31,7 +32,13 @@ public class PlayerHumanLocal implements IPlayer {
 
 	@Override
 	public void killBrain() {
-		// TODO Auto-generated method stub		
+		// nothing happens
+	}
+
+	@Override
+	public <T> IBrainAI<T> getIBrain() {
+		// nothing happens
+		return null;
 	}
 
 }

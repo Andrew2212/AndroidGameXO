@@ -5,7 +5,6 @@ import com.hqup.gamexo.ai.IPlayerBot;
 import com.hqup.gamexo.ai.WayEnum;
 import com.hqup.gamexo.ai.brutforceway.BrutforceAI;
 import com.hqup.gamexo.ai.gardnerway.Gardner;
-import com.hqup.gamexo.ai.utils.LoggerAI;
 import com.hqup.gamexo.gamefield.Game;
 import com.hqup.gamexo.gamefield.GameField;
 import com.hqup.gamexo.utils.Logger;
@@ -27,29 +26,22 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 	private static final int X = 0;
 	private static final int Y = 1;
 	private static int[] position = new int[2];
-	private IBrainAI<?> iBrainAI;
+	private static IBrainAI<?> iBrainAI;
 	private WayEnum wayEnum;
 	private char signPlayer;
 
 	private int fieldSize;
 	private int numChecked;
 
-	/**
-	 * testing counter
-	 */
-	private int counter = 0;
-
 	public PlayerBot(int fieldSize, int numChecked, char signPlayer) {
 		this.signPlayer = signPlayer;
 		this.fieldSize = fieldSize;
 		this.numChecked = numChecked;
 
-		counter++;
 		wayEnum = Game.getWayEnum();
-		iBrainAI = createBrain(wayEnum);
 
-		LoggerAI.p("PlayerBot::CONSTRUCTOR::counter = " + counter
-				+ " wayEnum = " + wayEnum);
+		Logger.v("PlayerBot::CONSTRUCTOR::" + " wayEnum = " + wayEnum);
+		iBrainAI = createBrain(wayEnum);
 	}
 
 	private IBrainAI<?> createBrain(WayEnum wayEnum) {
@@ -88,13 +80,12 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public int[] doMove() {
+
 		Logger.v();
-		LoggerAI.p("PlayerBot::doMove()::counter = " + counter);
-		counter++;
 		do {
 			position = getCoordinate(iBrainAI,
 					(T[][]) GameField.getFieldMatrix(),
-					((T) (Character) signPlayer));
+					(T) (Character) signPlayer);
 		} while (GameField.getFieldMatrix()[position[X]][position[Y]] != GameField.VALUE_DEFAULT);
 
 		return position;
@@ -117,7 +108,6 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 	// Check out whether it is necessary
 	@Override
 	public boolean setMove(int cellX, int cellY, char signPlayer) {
-		Logger.v();
 		return GameField.setSignToCell(cellX, cellY, signPlayer);
 	}
 
@@ -125,7 +115,7 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 		return signPlayer;
 	}
 
-	public IBrainAI<?> getBrain() {
+	public static IBrainAI<?> getBrain() {
 		return iBrainAI;
 	}
 
@@ -137,7 +127,7 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 		Logger.v();
 		// PlayerBot by 'doMove()' returns 'the best AI move'
 		int[] move = doMove();
-		LoggerAI.p("***move[X] = " + move[X] + " move[Y] = " + move[Y]);
+		Logger.v("***move[X] = " + move[X] + " move[Y] = " + move[Y]);
 		Bundle msgData = new Bundle();
 		msgData.putIntArray(KEY_MOVE, move);
 		msgData.putInt(KEY_X, move[X]);
@@ -155,6 +145,12 @@ public class PlayerBot<T> implements IPlayer, IPlayerBot<T> {
 	public void killBrain() {
 		iBrainAI = null;
 
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public IBrainAI<Object> getIBrain() {
+		return ((IBrainAI) iBrainAI);
 	}
 
 	// **************CHECK OUT IT!********NOT USED YET!

@@ -1,5 +1,6 @@
 package com.hqup.gamexo.ai;
 
+
 /**
  * Created with IntelliJ IDEA.
  * User: Andrew2212

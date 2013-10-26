@@ -20,18 +20,11 @@ public class BrutforceAI implements IBrainAI<Object> {
 	private GetterLastEnemyMove getterLastEnemyMove;
 	private Constructor constructor;
 	private Destructor destructor;
-	private boolean isFirstMoveDone = false;// Crutch for giving signBot
-
-	/**
-	 * testing counter
-	 */
-	private int counter = 0;
+	private boolean isFirstMoveDone = false;// For giving signBot
 
 	public BrutforceAI(int fieldSize, int numChecked) {
 		// Set 'CoreGame options' where we'll get them from
-		LoggerAI.p("BrutForce::CONSTRUCTOR::counter = " + counter);
 		CoreGame.initCoreGame(fieldSize, numChecked);
-		counter = 0;
 		GameOptions.initGameOptions();
 		getterLastEnemyMove = new GetterLastEnemyMove();
 		constructor = new Constructor();
@@ -46,8 +39,7 @@ public class BrutforceAI implements IBrainAI<Object> {
 	 * @return MOVE i.e. int[2] - coordinates of cell
 	 */
 	public int[] findMove(Object[][] fieldMatrixObject, Object figure) {
-		counter++;
-		LoggerAI.p("BrutForce::findMove()::counter = " + counter);
+
 		FieldMatrixConverter<Object> converter = new FieldMatrixConverter<Object>();
 		Character[][] fieldMatrixCharacter = converter
 				.convertFieldMatrixToCharacter(fieldMatrixObject);
@@ -57,7 +49,7 @@ public class BrutforceAI implements IBrainAI<Object> {
 				+ BrutforceAI.fieldMatrix.length);
 
 		// Executes only one time
-		LoggerAI.p("isFirstMoveDone = " + isFirstMoveDone);
+		LoggerAI.p("Brutforce::isFirstMoveDone = " + isFirstMoveDone);
 		if (!isFirstMoveDone) {
 			GameOptions.setSignBotAndSignEnemy(converter
 					.convertSignToCharacter(figure));

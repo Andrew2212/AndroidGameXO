@@ -213,7 +213,7 @@ public class GameView extends View {
 			// Get coordinates of touch /dip/
 			int x = (int) event.getX();
 			int y = (int) event.getY();
-			// Coordinates of touched cell /numero/ i.e. 'fieldMatrix[x][y]'
+			// Coordinates of touched cell i.e. 'fieldMatrix[x][y]'
 			int cellX = (int) Math.floor(x / cellSizeDip);
 			int cellY = (int) Math.floor(y / cellSizeDip);
 
@@ -234,11 +234,11 @@ public class GameView extends View {
 
 				Logger.v("currentPlayer = " + currentPlayer);
 				Logger.v("move[X] = " + move[X] + ", move[Y] = " + move[Y]);
-				
-//				GameActivity.switchPlayer();
+
+				// GameActivity.switchPlayer();
 				invalidate();
 				GameActivity.switchPlayer();
-				
+
 				return true;
 			}
 

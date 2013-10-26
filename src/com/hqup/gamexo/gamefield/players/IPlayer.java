@@ -1,5 +1,7 @@
 package com.hqup.gamexo.gamefield.players;
 
+import com.hqup.gamexo.ai.IBrainAI;
+
 public interface IPlayer {
 	/**
 	 * 
@@ -18,7 +20,23 @@ public interface IPlayer {
 	 */
 	boolean setMove(int cellX, int cellY, char signPlayer);
 
+	/**
+	 * 
+	 * @return signPlayer 'X' or 'O'
+	 */
 	char getSignPlayer();
-	
+
+	/**
+	 * Crutch for this architecture <br>
+	 * Kills the brain of current playerBot</br><br>
+	 * Called into Game::killGame()</br>
+	 */
 	void killBrain();
+
+	/**
+	 * Method for testing - it's unneeded
+	 * 
+	 * @return 'brain' of the PlayerBot
+	 */
+	<T> IBrainAI<T> getIBrain();
 }

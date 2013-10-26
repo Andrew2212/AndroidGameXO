@@ -2,7 +2,6 @@ package com.hqup.gamexo.gamefield;
 
 import com.hqup.gamexo.GameActivity;
 import com.hqup.gamexo.ai.WayEnum;
-import com.hqup.gamexo.ai.utils.LoggerAI;
 import com.hqup.gamexo.gamefield.players.IPlayer;
 import com.hqup.gamexo.gamefield.players.PlayerBot;
 import com.hqup.gamexo.gamefield.players.PlayerHumanLocal;
@@ -26,7 +25,7 @@ public class Game {
 	private static GameStateEnum gameState;
 
 	/**
-	 * testing counter
+	 * constructor counter (it's crutch)
 	 */
 	private static int counter = 0;
 
@@ -69,18 +68,20 @@ public class Game {
 	}
 
 	/**
+	 * Crutch for this architecture <br>
 	 * It's called into GameActivity after event 'GameOver' or within
-	 * 'onResume()'
+	 * 'onResume()'</br>
 	 */
-//	public static void killGame() {
-//if(0 < counter){
-//		playerUser = null;
-//		playerEnemy.killBrain();
-//		playerEnemy = null;
-//		gameFieldController = null;
-//		GameField.killFieldMatrix();}
-//
-//	}
+	public static void killGame() {
+		if (0 < counter) {
+			playerUser = null;
+			playerEnemy.killBrain();
+			playerEnemy = null;
+			gameFieldController = null;
+			GameField.killFieldMatrix();
+		}
+
+	}
 
 	public static GameStateEnum getGameState() {
 		return gameState;
@@ -149,7 +150,7 @@ public class Game {
 	}
 
 	public void setPlayerUser(IPlayer player) {
-		this.playerUser = player;
+		Game.playerUser = player;
 	}
 
 	public IPlayer getPlayerEnemy() {
@@ -157,7 +158,7 @@ public class Game {
 	}
 
 	public void setPlayerEnemy(IPlayer playerEnemy) {
-		this.playerEnemy = playerEnemy;
+		Game.playerEnemy = playerEnemy;
 	}
 
 	public static EnumEnemy getEnumEmemy() {

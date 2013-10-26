@@ -15,14 +15,12 @@ public class Destructor {
 	private final Integer NEAR_MOVE = 1; // i.e. cell close to enemy move
 	private final Integer NEAR_WIN_ENEMY_1; // i.e. string XXXX_ without 1 sign
 	private final Integer NEAR_WIN_ENEMY_2; // i.e. string XXX__ without 2 sign
-	private final Integer NEAR_WIN_ENEMY_1_DANGER; // for cell that alters
-													// string '_XXX_X_' to
-													// string enemyWIN 'XXXXX'
-	private final Integer NEAR_WIN_ENEMY_2_DANGER; // for cell that alters
-													// string '_XX_X_' to string
-													// nearWIN_1 '_XXXX_'
+	// for cell that alters string '_XXX_X_' to string enemyWIN 'XXXXX'
+	private final Integer NEAR_WIN_ENEMY_1_DANGER;
+	// for cell that alters string '_XX_X_' to string nearWIN_1 '_XXXX_'
+	private final Integer NEAR_WIN_ENEMY_2_DANGER;
 
-	private Map weightMap;
+	private Map<KeyCell, Integer> weightMap;
 	private String stringResultOfCheck;
 	/**
 	 * Temporary list of cell coordinate for checked line
@@ -50,7 +48,7 @@ public class Destructor {
 		NEAR_WIN_ENEMY_1_DANGER = CoreGame.getNumCheckedSigns() * 20;
 		NEAR_WIN_ENEMY_2 = CoreGame.getNumCheckedSigns() * 2;
 		NEAR_WIN_ENEMY_2_DANGER = CoreGame.getNumCheckedSigns() * 6;
-		weightMap = new HashMap<int[], Integer>();
+		weightMap = new HashMap<KeyCell, Integer>();
 	}
 
 	// ------------Public Methods-------------------------------
@@ -68,25 +66,22 @@ public class Destructor {
 				+ lastEnemyMoveX + " lastEnemyMoveY = " + lastEnemyMoveY);
 
 		findCellsNearLastEnemyMove(lastEnemyMoveX, lastEnemyMoveY);
+		setWeightToCellNearLastEnemyMove();
+
 		setWeightInRow(lastEnemyMoveX, lastEnemyMoveY);
 		setWeightInColumn(lastEnemyMoveX, lastEnemyMoveY);
 		setWeightInDiagonalCW(lastEnemyMoveX, lastEnemyMoveY);
 		setWeightInDiagonalCCW(lastEnemyMoveX, lastEnemyMoveY);
 
-		// Print value of the 'weightMap'
-		controlWeightMap();
-
-		if (weightMap.isEmpty()) {
-			setWeightToCellNearLastEnemyMove();
-			return null;
-		}
-
 		int[] destructiveMove;// It's 'move' to return
 
-		KeyCell keyMaxWeight = getMaxWeight(weightMap); // Coordinate of the
-														// cell with max
-														// 'weight'
+		// Print value of the 'weightMap'
+		// controlWeightMap();
+
+		// Coordinate of the cell with max 'weight'
+		KeyCell keyMaxWeight = getMaxWeight(weightMap);
 		destructiveMove = new int[] { keyMaxWeight.getX(), keyMaxWeight.getY() };
+
 		if (keyMaxWeight != null) {
 			weightMap.remove(keyMaxWeight);
 		}
@@ -109,7 +104,7 @@ public class Destructor {
 		Integer maxWeight = null;
 		KeyCell keyMaxWeight = null;
 
-		Iterator iterator = weightMap.keySet().iterator();
+		Iterator<KeyCell> iterator = weightMap.keySet().iterator();
 		while (iterator.hasNext()) {
 			KeyCell key = (KeyCell) iterator.next();
 			Integer value = weightMap.get(key);
@@ -121,13 +116,13 @@ public class Destructor {
 		return keyMaxWeight;
 	}
 
-	// -------------------Reduce cell weight after destructive
-	// move-------------------------
+	// ------Reduce cell weight after destructive move---------
 
 	/**
 	 * Reduces weight of cells that had been into 'lineWin_1' before our last
 	 * move
 	 */
+	@SuppressWarnings("unused")
 	private void reduceWeightOldWin_1Cells() {
 		if (listCheckedCellOldWin_1 != null) {
 			for (int i = 0; i < listCheckedCellOldWin_1.size(); i++) {
@@ -142,6 +137,7 @@ public class Destructor {
 	 * Reduces weight of cells that had been into 'lineWin_2' before our last
 	 * move
 	 */
+	@SuppressWarnings("unused")
 	private void reduceWeightOldWin_2Cells() {
 		if (listCheckedCellOldWin_2 != null) {
 			for (int i = 0; i < listCheckedCellOldWin_2.size(); i++) {
@@ -243,7 +239,7 @@ public class Destructor {
 		listCheckedCell.trimToSize();
 	}
 
-	// -------------Write Checked Value----------------------------------------
+	// -------------Write Checked Value---------------------------
 
 	/**
 	 * @param x
@@ -298,10 +294,6 @@ public class Destructor {
 	private List<int[]> setWeightToNearWin_1() {
 
 		for (int j = 0; j < GameOptions.getListStringNearWinEnemy_1().size(); j++) {
-			// LoggerAI.p("Destructor* " + j + " strWin_1 = " +
-			// GameOptions.listStringNearWinEnemy_1.get(j));
-			// LoggerAI.p("Destructor* " + j + " stringResultOfCheck = " +
-			// stringResultOfCheck);
 
 			// Check condition 'contains' for each string from
 			// 'listStringNearWinEnemy_1'
@@ -345,9 +337,8 @@ public class Destructor {
 									+ (Integer) weightMap.get(keyCell);
 						}
 
-						weightMap.put(keyCell, cellNewWeight); // if (cellValue
-																// ==
-																// (GameOptions.DEFAULT_CELL_VALUE)
+						weightMap.put(keyCell, cellNewWeight);// to empty cell
+
 						// LoggerAI.p("1************Destructor::setWeightToNearWin_1::cell = "
 						// + keyCell.toString() + "cellNewWeight = " +
 						// cellNewWeight);
@@ -421,9 +412,7 @@ public class Destructor {
 									+ (Integer) weightMap.get(keyCell);
 						}
 
-						weightMap.put(keyCell, cellNewWeight);// if (cellValue
-																// ==
-																// (GameOptions.DEFAULT_CELL_VALUE)
+						weightMap.put(keyCell, cellNewWeight);// to empty cell
 
 						// System.out.println("2*Destructor::setWeightToNearWin_2::cell = "
 						// + keyCell.toString() + "cellNewWeight = " +
@@ -596,13 +585,14 @@ public class Destructor {
 			cellValue += BrutforceAI.getCopyFieldMatrix()[cellX][cellY];
 		}
 
-//		LoggerAI.p("Destructor::fetchCellValue()::cellX = " + cellX
-//				+ " cellY = " + cellY + "cellValue = " + cellValue);
+		// LoggerAI.p("Destructor::fetchCellValue()::cellX = " + cellX
+		// + " cellY = " + cellY + "cellValue = " + cellValue);
 
 		return cellValue;
 	}
 
 	// ---------Methods for test print value =) ---------------
+	@SuppressWarnings("unused")
 	private void controlListCheckedCells() {
 		LoggerAI.p("listCheckedCell.size() = " + listCheckedCell.size());
 
@@ -612,17 +602,18 @@ public class Destructor {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void controlWeightMap() {
 
 		LoggerAI.p("Destructor::controlWeightMap::weightMap.size() = "
 				+ weightMap.size());
 
-		Iterator iterator = weightMap.keySet().iterator();
+		Iterator<KeyCell> iterator = weightMap.keySet().iterator();
 		while (iterator.hasNext()) {
 			KeyCell keyCell = (KeyCell) iterator.next();
 			Integer value = (Integer) weightMap.get(keyCell);
 
-			LoggerAI.p("Destructor::weightMap = ");
+			LoggerAI.p("Destructor::weightMap is: ");
 			LoggerAI.p("keyCell = " + keyCell.toString() + "  value = " + value);
 		}
 	}

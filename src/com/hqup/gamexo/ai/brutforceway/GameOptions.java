@@ -1,10 +1,9 @@
 package com.hqup.gamexo.ai.brutforceway;
 
-import com.hqup.gamexo.ai.CoreGame;
-import com.hqup.gamexo.ai.utils.LoggerAI;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.hqup.gamexo.ai.CoreGame;
 
 /**
  * Created with IntelliJ IDEA.

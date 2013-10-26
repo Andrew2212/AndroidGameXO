@@ -17,6 +17,9 @@
     <string name="btn_start">Start Game</string>
     <string name="btn_statistic">Statistic</string>
     <string name="btn_about">About developers</string>
+    <string name="btn_about_mood_dislike">I dislike</string>
+    <string name="btn_about_mood_sad">I\&apos;m sad</string>
+    <string name="btn_about_mood_like">I like</string>
 
     <!-- Toast -->
     <string name="toast_nothing_happens">Nothing happens!</string>
@@ -33,8 +36,8 @@
     <string name="screen_game_count">0</string>
     <string name="screen_level_difficulty">Level of difficulty</string>
     <string name="screen_level">Level:</string>
-    <string name="screen_easy">B-Force</string>
-    <string name="screen_middle">M-Max</string>
+    <string name="screen_easy">BForce</string>
+    <string name="screen_middle">MinMax</string>
     <string name="screen_hard">Gardner</string>
     <string name="screen_connection_mode">Connection mode:</string>
     <string name="screen_bluetooth">Bluetooth</string>
@@ -42,12 +45,13 @@
     <string name="screen_info_game">Some Info</string>
     <string name="screen_info_game_options">GAME OPTIONS:</string>
     <string name="screen_info_game_to">Game to</string>
-     <string name="screen_info_game_to_wins">wins</string>
+    <string name="screen_info_game_to_wins">wins</string>
     <string name="screen_info_field_size">Field size =</string>
     <string name="screen_info_checked_signs">Winning line =</string>
     <string name="screen_info_checked_signs_signs">signs</string>
     <string name="screen_game_result">COMPETITION IS OVER!</string>
     <string name="screen_game_result_is_winner">is Winner!</string>
+     <string name="screen_online_only">*** online only ***</string>
 
     <!-- Preferences -->
     <!-- CheckBox -->
@@ -85,6 +89,10 @@
     <string name="descript">Description</string>
 
     <!-- Lorem Ipsum -->
-    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent sed risus fringilla, imperdiet lorem elementum, commodo elit. Etiam in semper dolor, non accumsan magna.</string>
+    <string name="lorem_ipsum">Dream team consist of:\n\n       
+kolega69 (Konyachenko Oleg)\n- AI Gardner\n\n
+AndrewYa \n- AI Minimax\n\n
+GlaZier (Khokhlushin Mikhail)\n- AI Minimax\n\n
+Andrew2212\n- AI BrutForce\n- architecture\n- GUI</string>
 
 </resources>

@@ -73,25 +73,30 @@
 
                 <RadioButton
                     android:id="@+id/radio_Easy"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dip"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:checked="false"
+                    android:lines="1"
+                    android:maxLines="1"
                     android:text="@string/screen_easy" />
 
                 <RadioButton
                     android:id="@+id/radio_Middle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dip"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:checked="true"
+                    android:lines="1"
+                    android:maxLines="1"
                     android:text="@string/screen_middle" />
 
                 <RadioButton
                     android:id="@+id/radio_Hard"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dip"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:lines="1"
+                    android:maxLines="1"
                     android:text="@string/screen_hard" />
             </RadioGroup>
         </LinearLayout>

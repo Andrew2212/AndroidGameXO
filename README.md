@@ -16,6 +16,6 @@ The Bot has brain mode:
 - Gardner - see books of Mr. Gardner - by kolega69 (Konyachenko Oleg)
 
 
-- There is only authors (Hexlet-Java-101 team AI) own code (it's part of the open source Hexlet.org project).
+- There is only authors (Hexlet-Java-101 team AI) own code.
 - GUI & architecture by Andrew2212(me).
 - It works independently onto the device quite well. 
